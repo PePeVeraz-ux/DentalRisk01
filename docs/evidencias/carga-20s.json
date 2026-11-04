@@ -1,0 +1,20 @@
+{
+  "generated_at": "2026-10-21T05:07:41.254Z",
+  "requested_seconds": 20,
+  "elapsed_seconds": 24.5090768,
+  "motor": "PGlite",
+  "physical_hardware": false,
+  "historical_records": 10000,
+  "web_sessions": 10,
+  "stations": 2,
+  "requests": 54,
+  "errors": [],
+  "rfid_requests": 8,
+  "max_rfid_ms": 457.47999999999956,
+  "p95_rfid_ms": 457.47999999999956,
+  "integrity": {
+    "count": 10004,
+    "revenue": "100040000"
+  },
+  "passed": true
+}

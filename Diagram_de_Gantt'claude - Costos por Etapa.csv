@@ -1,0 +1,83 @@
+COSTOS POR ETAPA — Sistema RFID de control operativo y productividad,,,,,,,,,,,
+"Cifras en pesos mexicanos (MXN) | Fechas y responsables vinculados a la hoja ""Gantt"" | Celdas azules con fondo amarillo = supuestos editables",,,,,,,,,,,
+,,,,,,,,,,,
+1. RESUMEN DE COSTOS POR ETAPA (FASE),,,,,,,,,,,
+#,Etapa,,Nº de actividades,Inicio,Fin,Duración (días),Horas,% del total,Mano de obra,Costos directos,Costo total
+1,Inicio,,1,17/09/2026,17/09/2026,1,4,0.6%,$600,-,$600
+2,Análisis,,4,28/09/2026,20/10/2026,23,80,10.7%,"$10,680",-,"$10,680"
+3,Diseño,,4,20/10/2026,04/11/2026,16,72,9.1%,"$9,120",-,"$9,120"
+4,Hardware,,3,12/10/2026,19/11/2026,39,68,13.9%,"$8,840","$5,000","$13,840"
+5,Software,,5,04/11/2026,07/12/2026,34,244,34.6%,"$32,040","$2,450","$34,490"
+6,Integración,,2,26/11/2026,16/01/2027,52,72,9.6%,"$9,600",-,"$9,600"
+7,Pruebas,,4,04/01/2027,15/02/2027,43,80,10.2%,"$10,200",-,"$10,200"
+8,Implementación,,2,20/01/2027,20/01/2027,1,8,1.1%,"$1,080",-,"$1,080"
+9,Mejora,,2,29/01/2027,10/02/2027,13,40,5.1%,"$5,040",-,"$5,040"
+10,Cierre,,4,20/02/2027,09/03/2027,18,40,5.1%,"$5,120",-,"$5,120"
+SUBTOTAL,,,31,,,,708,100.0%,"$92,320","$7,450","$99,770"
+Contingencia / imprevistos,,,,,,,,10.0%,,,"$9,977"
+COSTO TOTAL DEL PROYECTO,,,,,,,,,,,"$109,747"
+Verificación: subtotal del resumen − total del detalle (debe ser 0),,,,,,,,,,,-
+,,,,,,,,,,,
+2. SUPUESTOS (editables),,,,,,,,,,,
+,Horas dedicadas por día hábil a cada actividad,,4.0,,,,,,,,
+,Contingencia sobre el subtotal,,10.0%,,,,,,,,
+,,,,,,,,,,,
+,Responsable (igual que en el Gantt),,Rol (inferido de las actividades),Tarifa por hora (MXN),,,,,,,
+,Sanchez Murillo Edoardo,,Líder de proyecto / arquitectura,$150,,,,,,,
+,Bojorquez Barraza Jesus Alejandro,,"Hardware, base de datos e integración",$130,,,,,,,
+,Ponce Zeferino Alann Eduardo,,"Análisis, KPIs y pruebas",$120,,,,,,,
+,Martinez Lopez Santi Erubey,,"Diseño de interfaz, frontend y documentación",$120,,,,,,,
+,,,,,,,,,,,
+"3. COSTOS DIRECTOS (hardware, tarjetas y servicios) — asignados a una actividad por su ID",,,,,,,,,,,
+ID act.,Etapa,Concepto,Supuesto / nota,,,,,,Cantidad,Costo unitario,Total
+11,Hardware,Lectores RFID USB,Estimado: 1 lector en recepción y 1 en consultorio. Cotizar (act. 10).,,,,,,2,"$1,800","$3,600"
+11,Hardware,Tarjetas RFID (50 piezas),Estimado por tarjeta; el proyecto pide 50 tarjetas.,,,,,,50,$20,"$1,000"
+12,Hardware,Hub USB y cables,Estimado para instalación de lectores.,,,,,,1,$400,$400
+13,Software,Servidor / hosting (BD + API),Estimado: renta mensual ×7 meses (sep 2026 – mar 2027).,,,,,,7,$350,"$2,450"
+,,,,,,,,,,,-
+,,,,,,,,,,,-
+,,,,,,,,,,,-
+,,,,,,,,,,,-
+Total costos directos,,,,,,,,,,,"$7,450"
+"Las filas vacías sirven para agregar más costos directos: escribe el ID de la actividad, concepto, cantidad y costo unitario.",,,,,,,,,,,
+,,,,,,,,,,,
+4. DETALLE POR ACTIVIDAD (vinculado a la hoja Gantt),,,,,,,,,,,
+ID,Etapa,Actividad,Responsable,Inicio,Fin,Días hábiles,Horas,Tarifa por hora,Mano de obra,Costos directos,Costo total
+1,Inicio,Kickoff y organización del proyecto,Sanchez Murillo Edoardo,17/09/2026,17/09/2026,1,4,$150,$600,-,$600
+2,Análisis,Levantamiento de requerimientos,Sanchez Murillo Edoardo,28/09/2026,05/10/2026,6,24,$150,"$3,600",-,"$3,600"
+3,Análisis,Mapeo del proceso de atención y reglas de negocio,Bojorquez Barraza Jesus Alejandro,05/10/2026,12/10/2026,6,24,$130,"$3,120",-,"$3,120"
+4,Análisis,"Catálogo de servicios, dentistas y costos",Ponce Zeferino Alann Eduardo,12/10/2026,20/10/2026,7,28,$120,"$3,360",-,"$3,360"
+5,Análisis,Aprobación de requerimientos,Sanchez Murillo Edoardo,12/10/2026,12/10/2026,1,4,$150,$600,-,$600
+6,Diseño,Diseño de arquitectura cliente-servidor,Sanchez Murillo Edoardo,20/10/2026,20/10/2026,1,4,$150,$600,-,$600
+7,Diseño,Diseño de base de datos relacional,Bojorquez Barraza Jesus Alejandro,20/10/2026,30/10/2026,9,36,$130,"$4,680",-,"$4,680"
+8,Diseño,Diseño de interfaz y wireframes,Martinez Lopez Santi Erubey,30/10/2026,04/11/2026,4,16,$120,"$1,920",-,"$1,920"
+9,Diseño,Diseño de KPIs y reportes del administrador,Ponce Zeferino Alann Eduardo,30/10/2026,04/11/2026,4,16,$120,"$1,920",-,"$1,920"
+10,Hardware,Cotización y validación del presupuesto RFID,Bojorquez Barraza Jesus Alejandro,12/10/2026,20/10/2026,7,28,$130,"$3,640",-,"$3,640"
+11,Hardware,Adquisición de lectores y 50 tarjetas RFID,Bojorquez Barraza Jesus Alejandro,30/10/2026,04/11/2026,4,16,$130,"$2,080","$4,600","$6,680"
+12,Hardware,Instalación/configuración de lectores USB,Bojorquez Barraza Jesus Alejandro,12/11/2026,19/11/2026,6,24,$130,"$3,120",$400,"$3,520"
+13,Software,Implementación de base de datos (MySQL/PostgreSQL),Bojorquez Barraza Jesus Alejandro,04/11/2026,10/11/2026,5,20,$130,"$2,600","$2,450","$5,050"
+14,Software,Desarrollo API REST con Node.js,Sanchez Murillo Edoardo,04/11/2026,26/11/2026,17,68,$150,"$10,200",-,"$10,200"
+15,Software,Integración de lectura RFID y timestamps,Bojorquez Barraza Jesus Alejandro,19/11/2026,07/12/2026,13,52,$130,"$6,760",-,"$6,760"
+16,Software,Frontend de recepción (citas y vinculación),Martinez Lopez Santi Erubey,12/11/2026,07/12/2026,18,72,$120,"$8,640",-,"$8,640"
+17,Software,Dashboard de administrador y KPIs,Ponce Zeferino Alann Eduardo,26/11/2026,07/12/2026,8,32,$120,"$3,840",-,"$3,840"
+18,Integración,Flujo completo: recepción → check-in → check-out → reciclaje,Sanchez Murillo Edoardo,26/11/2026,07/12/2026,8,32,$150,"$4,800",-,"$4,800"
+19,Integración,Pruebas con los 15 tipos de servicios,Ponce Zeferino Alann Eduardo,04/01/2027,16/01/2027,10,40,$120,"$4,800",-,"$4,800"
+20,Pruebas,Pruebas funcionales y de errores,Ponce Zeferino Alann Eduardo,04/01/2027,16/01/2027,10,40,$120,"$4,800",-,"$4,800"
+21,Pruebas,Validación de exactitud de tiempos y cálculo de ingresos,Ponce Zeferino Alann Eduardo,11/01/2027,16/01/2027,5,20,$120,"$2,400",-,"$2,400"
+22,Pruebas,Prueba de aceptación del sistema,Sanchez Murillo Edoardo,16/01/2027,16/01/2027,1,4,$150,$600,-,$600
+23,Implementación,Capacitación de recepción y dentistas,Martinez Lopez Santi Erubey,20/01/2027,20/01/2027,1,4,$120,$480,-,$480
+24,Implementación,Piloto controlado en la clínica,Sanchez Murillo Edoardo,20/01/2027,20/01/2027,1,4,$150,$600,-,$600
+25,Mejora,Correcciones y ajustes del piloto,Bojorquez Barraza Jesus Alejandro,29/01/2027,05/02/2027,6,24,$130,"$3,120",-,"$3,120"
+26,Mejora,Validación de reportes semanales y ranking operativo,Ponce Zeferino Alann Eduardo,05/02/2027,10/02/2027,4,16,$120,"$1,920",-,"$1,920"
+27,Pruebas,Pruebas de rendimiento y aceptación final,Sanchez Murillo Edoardo,10/02/2027,15/02/2027,4,16,$150,"$2,400",-,"$2,400"
+28,Cierre,Go-live / puesta en producción,Sanchez Murillo Edoardo,20/02/2027,20/02/2027,1,4,$150,$600,-,$600
+29,Cierre,Monitoreo y estabilización inicial,Bojorquez Barraza Jesus Alejandro,25/02/2027,03/03/2027,5,20,$130,"$2,600",-,"$2,600"
+30,Cierre,Documentación final y manuales,Martinez Lopez Santi Erubey,03/03/2027,06/03/2027,3,12,$120,"$1,440",-,"$1,440"
+31,Cierre,"Presentación, evaluación y cierre del proyecto",Ponce Zeferino Alann Eduardo,09/03/2027,09/03/2027,1,4,$120,$480,-,$480
+TOTAL,,,,,,,708,,"$92,320","$7,450","$99,770"
+,,,,,,,,,,,
+Notas y supuestos:,,,,,,,,,,,
+"• Horas = días hábiles (lunes a viernes, mínimo 1) de cada actividad × horas por día de la sección 2. Si una actividad cae en fin de semana se cuenta 1 día.",,,,,,,,,,,
+"• Costo de mano de obra = horas × tarifa del responsable. Las tarifas, roles, horas por día y precios de hardware/hosting son estimaciones mías: reemplázalas por tus datos reales.",,,,,,,,,,,
+"• Texto verde = datos vinculados desde la hoja Gantt (si cambias fechas o responsables allá, los costos se recalculan aquí). Texto azul = supuestos editables.",,,,,,,,,,,
+"• Software de código abierto (Node.js, MySQL/PostgreSQL) sin costo de licencia.",,,,,,,,,,,

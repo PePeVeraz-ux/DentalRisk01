@@ -1,0 +1,345 @@
+[
+  {
+    "table": "agent_audit",
+    "columns": [
+      {
+        "name": "id",
+        "type": "character varying",
+        "nullable": false,
+        "default_value": null
+      },
+      {
+        "name": "actor_id",
+        "type": "character varying",
+        "nullable": true,
+        "default_value": null
+      },
+      {
+        "name": "action",
+        "type": "character varying(64)",
+        "nullable": false,
+        "default_value": null
+      },
+      {
+        "name": "entity_id",
+        "type": "character varying",
+        "nullable": true,
+        "default_value": null
+      },
+      {
+        "name": "created_at",
+        "type": "timestamp with time zone",
+        "nullable": false,
+        "default_value": null
+      }
+    ],
+    "constraints": [
+      {
+        "kind": "f",
+        "definition": "FOREIGN KEY (actor_id) REFERENCES agent_users(id)",
+        "columns": [
+          "actor_id"
+        ],
+        "parent": "agent_users"
+      },
+      {
+        "kind": "p",
+        "definition": "PRIMARY KEY (id)",
+        "columns": [
+          "id"
+        ],
+        "parent": null
+      }
+    ],
+    "indexes": [
+      {
+        "indexdef": "CREATE UNIQUE INDEX agent_audit_pkey ON public.agent_audit USING btree (id)"
+      }
+    ]
+  },
+  {
+    "table": "agent_login_attempts",
+    "columns": [
+      {
+        "name": "key",
+        "type": "character varying",
+        "nullable": false,
+        "default_value": null
+      },
+      {
+        "name": "failures",
+        "type": "integer",
+        "nullable": false,
+        "default_value": null
+      },
+      {
+        "name": "blocked_until",
+        "type": "timestamp with time zone",
+        "nullable": true,
+        "default_value": null
+      }
+    ],
+    "constraints": [
+      {
+        "kind": "p",
+        "definition": "PRIMARY KEY (key)",
+        "columns": [
+          "key"
+        ],
+        "parent": null
+      }
+    ],
+    "indexes": [
+      {
+        "indexdef": "CREATE UNIQUE INDEX agent_login_attempts_pkey ON public.agent_login_attempts USING btree (key)"
+      }
+    ]
+  },
+  {
+    "table": "agent_operations",
+    "columns": [
+      {
+        "name": "id",
+        "type": "character varying",
+        "nullable": false,
+        "default_value": null
+      },
+      {
+        "name": "owner_id",
+        "type": "character varying",
+        "nullable": false,
+        "default_value": null
+      },
+      {
+        "name": "user_id",
+        "type": "character varying",
+        "nullable": false,
+        "default_value": null
+      },
+      {
+        "name": "kind",
+        "type": "character varying(32)",
+        "nullable": false,
+        "default_value": null
+      },
+      {
+        "name": "request_hash",
+        "type": "character varying",
+        "nullable": false,
+        "default_value": null
+      },
+      {
+        "name": "created_at",
+        "type": "timestamp with time zone",
+        "nullable": false,
+        "default_value": null
+      }
+    ],
+    "constraints": [
+      {
+        "kind": "f",
+        "definition": "FOREIGN KEY (owner_id) REFERENCES agent_users(id)",
+        "columns": [
+          "owner_id"
+        ],
+        "parent": "agent_users"
+      },
+      {
+        "kind": "f",
+        "definition": "FOREIGN KEY (user_id) REFERENCES agent_users(id)",
+        "columns": [
+          "user_id"
+        ],
+        "parent": "agent_users"
+      },
+      {
+        "kind": "p",
+        "definition": "PRIMARY KEY (id)",
+        "columns": [
+          "id"
+        ],
+        "parent": null
+      }
+    ],
+    "indexes": [
+      {
+        "indexdef": "CREATE UNIQUE INDEX agent_operations_pkey ON public.agent_operations USING btree (id)"
+      },
+      {
+        "indexdef": "CREATE INDEX ix_agent_operations_owner_id ON public.agent_operations USING btree (owner_id)"
+      },
+      {
+        "indexdef": "CREATE INDEX ix_agent_operations_user_id ON public.agent_operations USING btree (user_id)"
+      }
+    ]
+  },
+  {
+    "table": "agent_sessions",
+    "columns": [
+      {
+        "name": "token_hash",
+        "type": "character varying",
+        "nullable": false,
+        "default_value": null
+      },
+      {
+        "name": "user_id",
+        "type": "character varying",
+        "nullable": false,
+        "default_value": null
+      },
+      {
+        "name": "expires_at",
+        "type": "timestamp with time zone",
+        "nullable": false,
+        "default_value": null
+      }
+    ],
+    "constraints": [
+      {
+        "kind": "f",
+        "definition": "FOREIGN KEY (user_id) REFERENCES agent_users(id)",
+        "columns": [
+          "user_id"
+        ],
+        "parent": "agent_users"
+      },
+      {
+        "kind": "p",
+        "definition": "PRIMARY KEY (token_hash)",
+        "columns": [
+          "token_hash"
+        ],
+        "parent": null
+      }
+    ],
+    "indexes": [
+      {
+        "indexdef": "CREATE UNIQUE INDEX agent_sessions_pkey ON public.agent_sessions USING btree (token_hash)"
+      },
+      {
+        "indexdef": "CREATE INDEX ix_agent_sessions_user_id ON public.agent_sessions USING btree (user_id)"
+      }
+    ]
+  },
+  {
+    "table": "agent_users",
+    "columns": [
+      {
+        "name": "id",
+        "type": "character varying",
+        "nullable": false,
+        "default_value": null
+      },
+      {
+        "name": "name",
+        "type": "character varying(120)",
+        "nullable": false,
+        "default_value": null
+      },
+      {
+        "name": "email",
+        "type": "character varying(254)",
+        "nullable": false,
+        "default_value": null
+      },
+      {
+        "name": "password_hash",
+        "type": "character varying",
+        "nullable": false,
+        "default_value": null
+      },
+      {
+        "name": "role",
+        "type": "character varying(16)",
+        "nullable": false,
+        "default_value": null
+      },
+      {
+        "name": "dentist_id",
+        "type": "character varying(64)",
+        "nullable": true,
+        "default_value": null
+      },
+      {
+        "name": "active",
+        "type": "boolean",
+        "nullable": false,
+        "default_value": null
+      },
+      {
+        "name": "profile_object_key",
+        "type": "character varying",
+        "nullable": true,
+        "default_value": null
+      },
+      {
+        "name": "created_at",
+        "type": "timestamp with time zone",
+        "nullable": false,
+        "default_value": null
+      }
+    ],
+    "constraints": [
+      {
+        "kind": "c",
+        "definition": "CHECK ((((role)::text <> 'DENTIST'::text) OR (dentist_id IS NOT NULL)))",
+        "columns": [
+          "role",
+          "dentist_id"
+        ],
+        "parent": null
+      },
+      {
+        "kind": "c",
+        "definition": "CHECK (((role)::text = ANY ((ARRAY['ADMIN'::character varying, 'RECEPTION'::character varying, 'DENTIST'::character varying, 'SUPPORT'::character varying])::text[])))",
+        "columns": [
+          "role"
+        ],
+        "parent": null
+      },
+      {
+        "kind": "p",
+        "definition": "PRIMARY KEY (id)",
+        "columns": [
+          "id"
+        ],
+        "parent": null
+      }
+    ],
+    "indexes": [
+      {
+        "indexdef": "CREATE UNIQUE INDEX agent_users_pkey ON public.agent_users USING btree (id)"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX ix_agent_users_email ON public.agent_users USING btree (email)"
+      }
+    ]
+  },
+  {
+    "table": "alembic_version",
+    "columns": [
+      {
+        "name": "version_num",
+        "type": "character varying(32)",
+        "nullable": false,
+        "default_value": null
+      }
+    ],
+    "constraints": [
+      {
+        "kind": "p",
+        "definition": "PRIMARY KEY (version_num)",
+        "columns": [
+          "version_num"
+        ],
+        "parent": null
+      }
+    ],
+    "indexes": [
+      {
+        "indexdef": "CREATE UNIQUE INDEX alembic_version_pkc ON public.alembic_version USING btree (version_num)"
+      }
+    ]
+  }
+]

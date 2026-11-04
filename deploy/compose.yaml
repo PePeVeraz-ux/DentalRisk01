@@ -1,0 +1,77 @@
+services:
+  database:
+    image: postgres:17-bookworm
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: dentalrisk
+      POSTGRES_USER: dentalrisk_owner
+      POSTGRES_PASSWORD: ${POSTGRES_OWNER_PASSWORD:?Configure POSTGRES_OWNER_PASSWORD}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:?Configure APP_DB_PASSWORD}
+      BACKUP_DB_PASSWORD: ${BACKUP_DB_PASSWORD:?Configure BACKUP_DB_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init-db.sh:/docker-entrypoint-initdb.d/10-users.sh:ro
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U dentalrisk_owner -d dentalrisk']
+      interval: 5s
+      retries: 12
+    networks: [private]
+  app:
+    build:
+      context: ..
+      target: runtime
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      APP_ORIGIN: ${APP_ORIGIN:?Configure APP_ORIGIN con HTTPS}
+      DATABASE_URL: postgresql://dentalrisk_app:${APP_DB_PASSWORD}@database:5432/dentalrisk
+      CLINIC_TIMEZONE: ${CLINIC_TIMEZONE:-America/Tijuana}
+    depends_on:
+      database:
+        condition: service_healthy
+    networks: [private]
+    security_opt: [no-new-privileges:true]
+    read_only: true
+    tmpfs:
+      - /tmp:rw,nosuid,noexec,size=64m
+      - /app/apps/web/.next/cache:rw,nosuid,size=64m
+    cap_drop: [ALL]
+  https:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      CLINIC_HOST: ${CLINIC_HOST:?Configure CLINIC_HOST}
+    ports: ['443:443', '80:80']
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddydata:/data
+      - caddyconfig:/config
+    depends_on: [app]
+    networks: [private]
+  backup:
+    profiles: [backup]
+    build:
+      context: ..
+      target: backup
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://dentalrisk_backup:${BACKUP_DB_PASSWORD}@database:5432/dentalrisk
+      BACKUP_DIR: /backup
+      BACKUP_KEY: ${BACKUP_KEY:?Configure BACKUP_KEY}
+      BACKUP_RETENTION_DAYS: 30
+    volumes:
+      - ${BACKUP_PATH:?Configure BACKUP_PATH en almacenamiento separado}:/backup
+    depends_on:
+      database:
+        condition: service_healthy
+    networks: [private]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+networks:
+  private:
+volumes:
+  pgdata:
+  caddydata:
+  caddyconfig:

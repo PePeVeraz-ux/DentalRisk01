@@ -1,0 +1,16 @@
+node_modules
+.git
+.env
+.env.*
+.local
+**/.next
+**/.next-ui
+**/.next-dev
+**/.next-production-ui
+backups
+test-results
+*.csv
+SRS*
+PLAN*
+Plan*
+REVISION*

@@ -1,0 +1,71 @@
+{
+  "name": "dentalrisk",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "overrides": {
+    "exceljs": {
+      "uuid": "11.1.1"
+    }
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "concurrently -k \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:api": "tsx watch --env-file-if-exists=.env apps/api/src/server.ts",
+    "dev:web": "next dev apps/web --hostname 127.0.0.1",
+    "build": "tsc --noEmit && next build apps/web",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test tests/*.test.ts",
+    "bootstrap": "tsx --env-file-if-exists=.env scripts/bootstrap.ts",
+    "migrate": "tsx --env-file-if-exists=.env scripts/migrate.ts",
+    "clinic:prepare": "tsx --env-file=.env scripts/prepare-clinic.ts",
+    "demo": "tsx --env-file-if-exists=.env scripts/demo.ts",
+    "start:api": "tsx --env-file-if-exists=.env apps/api/src/server.ts",
+    "start:web": "next start apps/web --hostname 127.0.0.1",
+    "backup": "tsx --env-file-if-exists=.env scripts/backup.ts",
+    "restore": "tsx --env-file-if-exists=.env scripts/restore.ts",
+    "load": "tsx --env-file-if-exists=.env scripts/load.ts",
+    "contracts": "tsx scripts/contracts.ts",
+    "check": "tsx scripts/check.ts",
+    "test:postgres": "tsx scripts/verify-postgres.ts",
+    "test:ui": "tsx scripts/ui-roles.ts",
+    "test:ui:production": "tsx scripts/ui-roles.ts --production",
+    "db:start": "tsx scripts/postgres-local.ts start",
+    "db:stop": "tsx scripts/postgres-local.ts stop",
+    "db:status": "tsx scripts/postgres-local.ts status",
+    "db:transfer": "tsx scripts/switch-postgres.ts"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "0.5.10",
+    "@fastify/cookie": "11.1.3",
+    "@fastify/helmet": "13.2.0",
+    "@fastify/rate-limit": "11.2.1",
+    "@fastify/swagger": "9.9.2",
+    "argon2": "0.45.1",
+    "exceljs": "4.4.0",
+    "fastify": "5.12.7",
+    "luxon": "3.7.2",
+    "next": "16.4.2",
+    "pdfkit": "0.20.2",
+    "pg": "8.23.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "tsx": "4.23.15",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "@types/luxon": "3.7.6",
+    "@types/node": "26.6.5",
+    "@types/pdfkit": "0.17.6",
+    "@types/pg": "8.23.1",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "concurrently": "10.0.6",
+    "embedded-postgres": "17.10.0-beta.17",
+    "prettier": "3.9.10",
+    "typescript": "7.0.2"
+  }
+}

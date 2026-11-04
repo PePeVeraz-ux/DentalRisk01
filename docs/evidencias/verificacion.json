@@ -1,0 +1,36 @@
+{
+  "generated_at": "2026-10-22T16:28:42.330Z",
+  "passed": true,
+  "application_version": "1.0.0",
+  "tests": 33,
+  "source_sha256": "9cc5d456d6a07ed20c727f62ec16da6ac5a1e4c80ef0b92d9a0c5e79f21527e0",
+  "steps": {
+    "typecheck": {
+      "passed": true,
+      "seconds": 2.3130873999999997
+    },
+    "test": {
+      "passed": true,
+      "seconds": 33.536338199999996
+    },
+    "build": {
+      "passed": true,
+      "seconds": 53.875951400000005
+    },
+    "contracts": {
+      "passed": true,
+      "seconds": 14.135592000000004
+    },
+    "audit": {
+      "passed": true,
+      "vulnerabilities": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      }
+    }
+  }
+}

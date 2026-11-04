@@ -1,0 +1,2672 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "DentalRisk API",
+    "version": "1.0.0"
+  },
+  "components": {
+    "securitySchemes": {
+      "session": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "dr_session"
+      },
+      "station": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {}
+  },
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/sessions": {
+      "post": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "maxLength": 254,
+                    "format": "email",
+                    "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "email",
+                  "password"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/sessions/me": {
+      "get": {
+        "tags": [
+          "sessions"
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION, DENTIST, SUPPORT. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/sessions/operation-access": {
+      "post": {
+        "tags": [
+          "sessions"
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "password": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 1000
+                  }
+                },
+                "required": [
+                  "password",
+                  "reason"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/sessions/operation-revoke": {
+      "post": {
+        "tags": [
+          "sessions"
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/sessions/logout": {
+      "post": {
+        "tags": [
+          "sessions"
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION, DENTIST, SUPPORT. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/openapi": {
+      "get": {
+        "tags": [
+          "openapi"
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/sessions/password": {
+      "post": {
+        "tags": [
+          "sessions"
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION, DENTIST, SUPPORT. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "current_password": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "new_password": {
+                    "type": "string",
+                    "minLength": 12,
+                    "maxLength": 128
+                  }
+                },
+                "required": [
+                  "current_password",
+                  "new_password"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/users": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 150
+                  },
+                  "email": {
+                    "type": "string",
+                    "maxLength": 254,
+                    "format": "email",
+                    "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 12,
+                    "maxLength": 128
+                  },
+                  "role": {
+                    "type": "string",
+                    "enum": [
+                      "ADMIN",
+                      "RECEPTION",
+                      "DENTIST",
+                      "SUPPORT"
+                    ]
+                  },
+                  "dentist_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+                    "nullable": true
+                  }
+                },
+                "required": [
+                  "name",
+                  "email",
+                  "password",
+                  "role"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/users/{id}": {
+      "patch": {
+        "tags": [
+          "users"
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "active": {
+                    "type": "boolean"
+                  },
+                  "role": {
+                    "type": "string",
+                    "enum": [
+                      "ADMIN",
+                      "RECEPTION",
+                      "DENTIST",
+                      "SUPPORT"
+                    ]
+                  },
+                  "dentist_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+                    "nullable": true
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 12,
+                    "maxLength": 128
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/services/{id}": {
+      "get": {
+        "tags": [
+          "services"
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION, DENTIST. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "services"
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 150
+                  },
+                  "price_cents": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000000000
+                  },
+                  "active": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/services": {
+      "get": {
+        "tags": [
+          "services"
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION, DENTIST. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$"
+            },
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "description": "Máximo 500"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$"
+            },
+            "in": "query",
+            "name": "offset",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            },
+            "in": "query",
+            "name": "q",
+            "required": false
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "services"
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 150
+                  },
+                  "price_cents": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000000000
+                  },
+                  "active": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "name",
+                  "price_cents"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/dentists/{id}": {
+      "get": {
+        "tags": [
+          "dentists"
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION, DENTIST. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "dentists"
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 150
+                  },
+                  "specialty": {
+                    "type": "string",
+                    "maxLength": 150
+                  },
+                  "active": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/dentists": {
+      "get": {
+        "tags": [
+          "dentists"
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION, DENTIST. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$"
+            },
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "description": "Máximo 500"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$"
+            },
+            "in": "query",
+            "name": "offset",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            },
+            "in": "query",
+            "name": "q",
+            "required": false
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "dentists"
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 150
+                  },
+                  "specialty": {
+                    "type": "string",
+                    "maxLength": 150
+                  },
+                  "active": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "name"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/stations/{id}": {
+      "get": {
+        "tags": [
+          "stations"
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION, DENTIST, SUPPORT. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "stations"
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 150
+                  },
+                  "active": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/stations": {
+      "get": {
+        "tags": [
+          "stations"
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION, DENTIST, SUPPORT. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$"
+            },
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "description": "Máximo 500"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$"
+            },
+            "in": "query",
+            "name": "offset",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            },
+            "in": "query",
+            "name": "q",
+            "required": false
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "stations"
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 150
+                  },
+                  "active": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "name"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/patients/{id}": {
+      "get": {
+        "tags": [
+          "patients"
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "patients"
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión. ADMIN requiere acceso operativo excepcional vigente, activado con contraseña y motivo.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 150
+                  },
+                  "reference": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 150
+                  },
+                  "active": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/patients": {
+      "get": {
+        "tags": [
+          "patients"
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$"
+            },
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "description": "Máximo 500"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$"
+            },
+            "in": "query",
+            "name": "offset",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            },
+            "in": "query",
+            "name": "q",
+            "required": false
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "patients"
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión. ADMIN requiere acceso operativo excepcional vigente, activado con contraseña y motivo.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 150
+                  },
+                  "reference": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 150
+                  },
+                  "active": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "name",
+                  "reference"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/cards/{id}": {
+      "get": {
+        "tags": [
+          "cards"
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/cards": {
+      "get": {
+        "tags": [
+          "cards"
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$"
+            },
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "description": "Máximo 500"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$"
+            },
+            "in": "query",
+            "name": "offset",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            },
+            "in": "query",
+            "name": "q",
+            "required": false
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "cards"
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "uid": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9:-]{4,64}$"
+                  }
+                },
+                "required": [
+                  "uid"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/shifts/{id}": {
+      "get": {
+        "tags": [
+          "shifts"
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION, DENTIST. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "shifts"
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 150
+                  },
+                  "weekday": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 6
+                  },
+                  "start_time": {
+                    "type": "string",
+                    "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+                  },
+                  "end_time": {
+                    "type": "string",
+                    "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+                  },
+                  "active": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/shifts": {
+      "get": {
+        "tags": [
+          "shifts"
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION, DENTIST. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$"
+            },
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "description": "Máximo 500"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$"
+            },
+            "in": "query",
+            "name": "offset",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            },
+            "in": "query",
+            "name": "q",
+            "required": false
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "shifts"
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 150
+                  },
+                  "weekday": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 6
+                  },
+                  "start_time": {
+                    "type": "string",
+                    "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+                  },
+                  "end_time": {
+                    "type": "string",
+                    "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+                  },
+                  "active": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "name",
+                  "weekday",
+                  "start_time",
+                  "end_time"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/cards/{id}/rehabilitate": {
+      "post": {
+        "tags": [
+          "cards"
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "reason": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 1000
+                  }
+                },
+                "required": [
+                  "reason"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/stations/{id}/credential": {
+      "post": {
+        "tags": [
+          "stations"
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "revoke": {
+                    "default": false,
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "revoke"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/calendar": {
+      "get": {
+        "tags": [
+          "calendar"
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION, DENTIST. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "calendar"
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "shift_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "day": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "operated": {
+                    "type": "boolean"
+                  },
+                  "breaks": {
+                    "maxItems": 10,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "start": {
+                          "type": "string",
+                          "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+                        },
+                        "end": {
+                          "type": "string",
+                          "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+                        }
+                      },
+                      "required": [
+                        "start",
+                        "end"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "required": [
+                  "shift_id",
+                  "day",
+                  "operated",
+                  "breaks"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/appointments": {
+      "get": {
+        "tags": [
+          "appointments"
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION, DENTIST. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$"
+            },
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "description": "Máximo 500"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$"
+            },
+            "in": "query",
+            "name": "offset",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            },
+            "in": "query",
+            "name": "q",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            },
+            "in": "query",
+            "name": "day",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "SCHEDULED",
+                "CANCELLED",
+                "ATTENDED"
+              ]
+            },
+            "in": "query",
+            "name": "status",
+            "required": false
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "appointments"
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión. ADMIN requiere acceso operativo excepcional vigente, activado con contraseña y motivo.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "patient_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "dentist_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "service_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "starts_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                  },
+                  "ends_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                  }
+                },
+                "required": [
+                  "patient_id",
+                  "dentist_id",
+                  "service_id",
+                  "starts_at",
+                  "ends_at"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/appointments/{id}": {
+      "patch": {
+        "tags": [
+          "appointments"
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión. ADMIN requiere acceso operativo excepcional vigente, activado con contraseña y motivo.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "patient_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "dentist_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "service_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "starts_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                  },
+                  "ends_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                  }
+                },
+                "required": [
+                  "patient_id",
+                  "dentist_id",
+                  "service_id",
+                  "starts_at",
+                  "ends_at"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/appointments/{id}/cancel": {
+      "post": {
+        "tags": [
+          "appointments"
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión. ADMIN requiere acceso operativo excepcional vigente, activado con contraseña y motivo.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "reason": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 1000
+                  }
+                },
+                "required": [
+                  "reason"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/attentions": {
+      "get": {
+        "tags": [
+          "attentions"
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION, DENTIST. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$"
+            },
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "description": "Máximo 500"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$"
+            },
+            "in": "query",
+            "name": "offset",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            },
+            "in": "query",
+            "name": "q",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            },
+            "in": "query",
+            "name": "day",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PENDING",
+                "IN_PROGRESS",
+                "COMPLETED",
+                "CANCELLED",
+                "INCIDENT"
+              ]
+            },
+            "in": "query",
+            "name": "status",
+            "required": false
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "attentions"
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión. ADMIN requiere acceso operativo excepcional vigente, activado con contraseña y motivo.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "patient_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "service_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "dentist_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "station_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "shift_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "card_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "appointment_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  }
+                },
+                "required": [
+                  "patient_id",
+                  "service_id",
+                  "dentist_id",
+                  "station_id",
+                  "shift_id",
+                  "card_id"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/attentions/{id}/release": {
+      "post": {
+        "tags": [
+          "attentions"
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión. ADMIN requiere acceso operativo excepcional vigente, activado con contraseña y motivo.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/attentions/{id}/incident": {
+      "post": {
+        "tags": [
+          "attentions"
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión. ADMIN requiere acceso operativo excepcional vigente, activado con contraseña y motivo.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "reason": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 1000
+                  },
+                  "replacement_card_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  }
+                },
+                "required": [
+                  "reason"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/attentions/{id}/cancel": {
+      "post": {
+        "tags": [
+          "attentions"
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión. ADMIN requiere acceso operativo excepcional vigente, activado con contraseña y motivo.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "reason": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 1000
+                  }
+                },
+                "required": [
+                  "reason"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/attentions/{id}/correct": {
+      "post": {
+        "tags": [
+          "attentions"
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "reason": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 1000
+                  },
+                  "started_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                  },
+                  "ended_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                  },
+                  "service_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "dentist_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  }
+                },
+                "required": [
+                  "reason",
+                  "started_at",
+                  "ended_at",
+                  "service_id",
+                  "dentist_id"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/incidents": {
+      "get": {
+        "tags": [
+          "incidents"
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/rfid/events": {
+      "post": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "event_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "uid": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9:-]{4,64}$"
+                  },
+                  "station_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  }
+                },
+                "required": [
+                  "event_id",
+                  "uid",
+                  "station_id"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "station": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/rfid/simulate": {
+      "post": {
+        "tags": [
+          "rfid"
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión. ADMIN requiere acceso operativo excepcional vigente, activado con contraseña y motivo.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "event_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "uid": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9:-]{4,64}$"
+                  },
+                  "station_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  }
+                },
+                "required": [
+                  "event_id",
+                  "uid",
+                  "station_id"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/reports": {
+      "get": {
+        "tags": [
+          "reports"
+        ],
+        "description": "Roles permitidos: ADMIN, DENTIST. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            },
+            "in": "query",
+            "name": "from",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            },
+            "in": "query",
+            "name": "to",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "query",
+            "name": "dentist_id",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "query",
+            "name": "service_id",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "query",
+            "name": "station_id",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "query",
+            "name": "shift_id",
+            "required": false
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/reports/executive": {
+      "get": {
+        "tags": [
+          "reports"
+        ],
+        "description": "Roles permitidos: ADMIN, DENTIST. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            },
+            "in": "query",
+            "name": "from",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            },
+            "in": "query",
+            "name": "to",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "query",
+            "name": "dentist_id",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "query",
+            "name": "service_id",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "query",
+            "name": "station_id",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "query",
+            "name": "shift_id",
+            "required": false
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/operations/overview": {
+      "get": {
+        "tags": [
+          "operations"
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION, DENTIST. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            },
+            "in": "query",
+            "name": "day",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/setup": {
+      "get": {
+        "tags": [
+          "setup"
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/reports/productivity": {
+      "get": {
+        "tags": [
+          "reports"
+        ],
+        "description": "Roles permitidos: ADMIN, DENTIST. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}$"
+            },
+            "in": "query",
+            "name": "month",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/reports/export": {
+      "get": {
+        "tags": [
+          "reports"
+        ],
+        "description": "Roles permitidos: ADMIN, DENTIST. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            },
+            "in": "query",
+            "name": "from",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            },
+            "in": "query",
+            "name": "to",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "query",
+            "name": "dentist_id",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "query",
+            "name": "service_id",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "query",
+            "name": "station_id",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "query",
+            "name": "shift_id",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "csv",
+                "pdf",
+                "xlsx"
+              ]
+            },
+            "in": "query",
+            "name": "format",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/audit": {
+      "get": {
+        "tags": [
+          "audit"
+        ],
+        "description": "Roles permitidos: ADMIN, SUPPORT. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/diagnostics": {
+      "get": {
+        "tags": [
+          "diagnostics"
+        ],
+        "description": "Roles permitidos: ADMIN, SUPPORT. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ]
+}

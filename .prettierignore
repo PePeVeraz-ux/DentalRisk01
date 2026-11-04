@@ -1,0 +1,9 @@
+node_modules
+.local
+**/.next
+**/.next-dev
+**/.next-ui
+**/.next-production-ui
+docs/api
+output
+package-lock.json

@@ -1,0 +1,1479 @@
+{
+  "info": {
+    "name": "DentalRisk API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "csrf",
+      "value": ""
+    },
+    {
+      "key": "stationToken",
+      "value": ""
+    },
+    {
+      "key": "id",
+      "value": ""
+    },
+    {
+      "key": "from",
+      "value": "2026-10-21"
+    },
+    {
+      "key": "to",
+      "value": "2026-10-21"
+    },
+    {
+      "key": "month",
+      "value": "2026-10"
+    },
+    {
+      "key": "day",
+      "value": "2026-10-21"
+    }
+  ],
+  "item": [
+    {
+      "name": "GET /api/v1/health",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "",
+        "url": "{{baseUrl}}/api/v1/health"
+      }
+    },
+    {
+      "name": "POST /api/v1/sessions",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "",
+        "url": "{{baseUrl}}/api/v1/sessions",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@example.test\",\n  \"password\": \"REEMPLAZAR\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 200) { pm.collectionVariables.set(\"csrf\", pm.response.json().csrf); }"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "GET /api/v1/sessions/me",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION, DENTIST, SUPPORT. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/sessions/me"
+      }
+    },
+    {
+      "name": "POST /api/v1/sessions/operation-access",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/sessions/operation-access",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"password\": \"REEMPLAZAR\",\n  \"reason\": \"REEMPLAZAR\"\n}"
+        }
+      }
+    },
+    {
+      "name": "POST /api/v1/sessions/operation-revoke",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/sessions/operation-revoke",
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        }
+      }
+    },
+    {
+      "name": "POST /api/v1/sessions/logout",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION, DENTIST, SUPPORT. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/sessions/logout",
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        }
+      }
+    },
+    {
+      "name": "GET /api/v1/openapi",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/openapi"
+      }
+    },
+    {
+      "name": "POST /api/v1/sessions/password",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION, DENTIST, SUPPORT. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/sessions/password",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"current_password\": \"REEMPLAZAR\",\n  \"new_password\": \"REEMPLAZAR\"\n}"
+        }
+      }
+    },
+    {
+      "name": "GET /api/v1/users",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/users"
+      }
+    },
+    {
+      "name": "POST /api/v1/users",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/users",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"REEMPLAZAR\",\n  \"email\": \"admin@example.test\",\n  \"password\": \"REEMPLAZAR\",\n  \"role\": \"ADMIN\"\n}"
+        }
+      }
+    },
+    {
+      "name": "PATCH /api/v1/users/{id}",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/users/{{id}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        }
+      }
+    },
+    {
+      "name": "GET /api/v1/services/{id}",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION, DENTIST. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/services/{{id}}"
+      }
+    },
+    {
+      "name": "PATCH /api/v1/services/{id}",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/services/{{id}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        }
+      }
+    },
+    {
+      "name": "GET /api/v1/services",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION, DENTIST. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/services"
+      }
+    },
+    {
+      "name": "POST /api/v1/services",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/services",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"REEMPLAZAR\",\n  \"price_cents\": 0\n}"
+        }
+      }
+    },
+    {
+      "name": "GET /api/v1/dentists/{id}",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION, DENTIST. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/dentists/{{id}}"
+      }
+    },
+    {
+      "name": "PATCH /api/v1/dentists/{id}",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/dentists/{{id}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        }
+      }
+    },
+    {
+      "name": "GET /api/v1/dentists",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION, DENTIST. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/dentists"
+      }
+    },
+    {
+      "name": "POST /api/v1/dentists",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/dentists",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"REEMPLAZAR\"\n}"
+        }
+      }
+    },
+    {
+      "name": "GET /api/v1/stations/{id}",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION, DENTIST, SUPPORT. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/stations/{{id}}"
+      }
+    },
+    {
+      "name": "PATCH /api/v1/stations/{id}",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/stations/{{id}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        }
+      }
+    },
+    {
+      "name": "GET /api/v1/stations",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION, DENTIST, SUPPORT. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/stations"
+      }
+    },
+    {
+      "name": "POST /api/v1/stations",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/stations",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"REEMPLAZAR\"\n}"
+        }
+      }
+    },
+    {
+      "name": "GET /api/v1/patients/{id}",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/patients/{{id}}"
+      }
+    },
+    {
+      "name": "PATCH /api/v1/patients/{id}",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión. ADMIN requiere acceso operativo excepcional vigente, activado con contraseña y motivo.",
+        "url": "{{baseUrl}}/api/v1/patients/{{id}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        }
+      }
+    },
+    {
+      "name": "GET /api/v1/patients",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/patients"
+      }
+    },
+    {
+      "name": "POST /api/v1/patients",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión. ADMIN requiere acceso operativo excepcional vigente, activado con contraseña y motivo.",
+        "url": "{{baseUrl}}/api/v1/patients",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"REEMPLAZAR\",\n  \"reference\": \"REEMPLAZAR\"\n}"
+        }
+      }
+    },
+    {
+      "name": "GET /api/v1/cards/{id}",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/cards/{{id}}"
+      }
+    },
+    {
+      "name": "GET /api/v1/cards",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/cards"
+      }
+    },
+    {
+      "name": "POST /api/v1/cards",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/cards",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"uid\": \"REEMPLAZAR\"\n}"
+        }
+      }
+    },
+    {
+      "name": "GET /api/v1/shifts/{id}",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION, DENTIST. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/shifts/{{id}}"
+      }
+    },
+    {
+      "name": "PATCH /api/v1/shifts/{id}",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/shifts/{{id}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        }
+      }
+    },
+    {
+      "name": "GET /api/v1/shifts",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION, DENTIST. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/shifts"
+      }
+    },
+    {
+      "name": "POST /api/v1/shifts",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/shifts",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"REEMPLAZAR\",\n  \"weekday\": 0,\n  \"start_time\": \"REEMPLAZAR\",\n  \"end_time\": \"REEMPLAZAR\"\n}"
+        }
+      }
+    },
+    {
+      "name": "POST /api/v1/cards/{id}/rehabilitate",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/cards/{{id}}/rehabilitate",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"reason\": \"REEMPLAZAR\"\n}"
+        }
+      }
+    },
+    {
+      "name": "POST /api/v1/stations/{id}/credential",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/stations/{{id}}/credential",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"revoke\": true\n}"
+        }
+      }
+    },
+    {
+      "name": "GET /api/v1/calendar",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION, DENTIST. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/calendar"
+      }
+    },
+    {
+      "name": "POST /api/v1/calendar",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/calendar",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"shift_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"day\": \"REEMPLAZAR\",\n  \"operated\": true,\n  \"breaks\": []\n}"
+        }
+      }
+    },
+    {
+      "name": "GET /api/v1/appointments",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION, DENTIST. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/appointments"
+      }
+    },
+    {
+      "name": "POST /api/v1/appointments",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión. ADMIN requiere acceso operativo excepcional vigente, activado con contraseña y motivo.",
+        "url": "{{baseUrl}}/api/v1/appointments",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"patient_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"dentist_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"service_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"starts_at\": \"2026-10-21T17:00:00Z\",\n  \"ends_at\": \"2026-10-21T17:00:00Z\"\n}"
+        }
+      }
+    },
+    {
+      "name": "PATCH /api/v1/appointments/{id}",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión. ADMIN requiere acceso operativo excepcional vigente, activado con contraseña y motivo.",
+        "url": "{{baseUrl}}/api/v1/appointments/{{id}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"patient_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"dentist_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"service_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"starts_at\": \"2026-10-21T17:00:00Z\",\n  \"ends_at\": \"2026-10-21T17:00:00Z\"\n}"
+        }
+      }
+    },
+    {
+      "name": "POST /api/v1/appointments/{id}/cancel",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión. ADMIN requiere acceso operativo excepcional vigente, activado con contraseña y motivo.",
+        "url": "{{baseUrl}}/api/v1/appointments/{{id}}/cancel",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"reason\": \"REEMPLAZAR\"\n}"
+        }
+      }
+    },
+    {
+      "name": "GET /api/v1/attentions",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION, DENTIST. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/attentions"
+      }
+    },
+    {
+      "name": "POST /api/v1/attentions",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión. ADMIN requiere acceso operativo excepcional vigente, activado con contraseña y motivo.",
+        "url": "{{baseUrl}}/api/v1/attentions",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"patient_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"service_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"dentist_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"station_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"shift_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"card_id\": \"00000000-0000-4000-8000-000000000001\"\n}"
+        }
+      }
+    },
+    {
+      "name": "POST /api/v1/attentions/{id}/release",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión. ADMIN requiere acceso operativo excepcional vigente, activado con contraseña y motivo.",
+        "url": "{{baseUrl}}/api/v1/attentions/{{id}}/release",
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        }
+      }
+    },
+    {
+      "name": "POST /api/v1/attentions/{id}/incident",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión. ADMIN requiere acceso operativo excepcional vigente, activado con contraseña y motivo.",
+        "url": "{{baseUrl}}/api/v1/attentions/{{id}}/incident",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"reason\": \"REEMPLAZAR\"\n}"
+        }
+      }
+    },
+    {
+      "name": "POST /api/v1/attentions/{id}/cancel",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión. ADMIN requiere acceso operativo excepcional vigente, activado con contraseña y motivo.",
+        "url": "{{baseUrl}}/api/v1/attentions/{{id}}/cancel",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"reason\": \"REEMPLAZAR\"\n}"
+        }
+      }
+    },
+    {
+      "name": "POST /api/v1/attentions/{id}/correct",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/attentions/{{id}}/correct",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"reason\": \"REEMPLAZAR\",\n  \"started_at\": \"2026-10-21T17:00:00Z\",\n  \"ended_at\": \"2026-10-21T17:00:00Z\",\n  \"service_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"dentist_id\": \"00000000-0000-4000-8000-000000000001\"\n}"
+        }
+      }
+    },
+    {
+      "name": "GET /api/v1/incidents",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/incidents"
+      }
+    },
+    {
+      "name": "POST /api/v1/rfid/events",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{stationToken}}"
+          }
+        ],
+        "description": "",
+        "url": "{{baseUrl}}/api/v1/rfid/events",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"event_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"uid\": \"REEMPLAZAR\",\n  \"station_id\": \"00000000-0000-4000-8000-000000000001\"\n}"
+        }
+      }
+    },
+    {
+      "name": "POST /api/v1/rfid/simulate",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión. ADMIN requiere acceso operativo excepcional vigente, activado con contraseña y motivo.",
+        "url": "{{baseUrl}}/api/v1/rfid/simulate",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"event_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"uid\": \"REEMPLAZAR\",\n  \"station_id\": \"00000000-0000-4000-8000-000000000001\"\n}"
+        }
+      }
+    },
+    {
+      "name": "GET /api/v1/reports",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, DENTIST. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/reports?from={{from}}&to={{to}}"
+      }
+    },
+    {
+      "name": "GET /api/v1/reports/executive",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, DENTIST. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/reports/executive?from={{from}}&to={{to}}"
+      }
+    },
+    {
+      "name": "GET /api/v1/operations/overview",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, RECEPTION, DENTIST. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/operations/overview?day={{day}}"
+      }
+    },
+    {
+      "name": "GET /api/v1/setup",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/setup"
+      }
+    },
+    {
+      "name": "GET /api/v1/reports/productivity",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, DENTIST. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/reports/productivity?month={{month}}"
+      }
+    },
+    {
+      "name": "GET /api/v1/reports/export",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, DENTIST. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/reports/export?from={{from}}&to={{to}}&format=csv"
+      }
+    },
+    {
+      "name": "GET /api/v1/audit",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, SUPPORT. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/audit"
+      }
+    },
+    {
+      "name": "GET /api/v1/diagnostics",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN, SUPPORT. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/diagnostics"
+      }
+    }
+  ]
+}

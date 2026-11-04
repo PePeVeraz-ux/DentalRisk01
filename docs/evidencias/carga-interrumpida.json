@@ -1,0 +1,16 @@
+{
+  "generated_at": "2026-10-22T16:34:48.187Z",
+  "application_version": "1.0.0",
+  "complete": false,
+  "passed": false,
+  "requested_seconds": 1800,
+  "last_observed_seconds": 1080,
+  "last_observed_requests": 5181,
+  "last_observed_errors": 0,
+  "motor": "PostgreSQL",
+  "historical_records": 10000,
+  "web_sessions": 10,
+  "stations": 2,
+  "physical_hardware": false,
+  "reason": "Ensayo detenido para cerrar la entrega a solicitud del usuario. No certifica rendimiento ni latencia máxima."
+}

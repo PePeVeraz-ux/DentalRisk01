@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-10-22T16:33:14.233Z",
+  "passed": true,
+  "isolated_database": true,
+  "desktop": "1440x1000",
+  "mobile": "390x844",
+  "browser_timezone": "America/New_York",
+  "clinic_timezone": "America/Tijuana",
+  "checks": [
+    "bundle optimizado sobre HTTPS, cookie __Host Secure/HttpOnly/SameSite y CSP con nonce",
+    "dueño: panel ejecutivo, ruta persistente y operación oculta",
+    "alta de cuentas por rol desde la interfaz",
+    "recepción: paciente, cita, horario clínico, vinculación, entrada/salida y liberación",
+    "restricción de rutas y API de administración",
+    "dentista: indicadores y atenciones propios, incluso con filtro ajeno",
+    "soporte: diagnóstico sin pacientes",
+    "dueño: activación y revocación de acceso excepcional sin permisos residuales",
+    "exportaciones CSV/PDF/XLSX",
+    "desconexión visible y recuperación",
+    "cuatro perfiles en escritorio y móvil sin desbordamiento",
+    "cierre de sesión móvil",
+    "sin errores JavaScript"
+  ],
+  "physical_hardware": false,
+  "production_bundle": true,
+  "tls": true,
+  "ephemeral_test_certificate": true,
+  "production_server_validated": false
+}

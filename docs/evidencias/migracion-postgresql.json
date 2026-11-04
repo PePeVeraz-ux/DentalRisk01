@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-04T01:25:11.492Z",
+  "database": "PostgreSQL",
+  "counts": {
+    "dentists": 0,
+    "users": 1,
+    "sessions": 0,
+    "login_attempts": 0,
+    "services": 0,
+    "stations": 0,
+    "patients": 0,
+    "cards": 0,
+    "shifts": 0,
+    "calendar_days": 0,
+    "appointments": 0,
+    "attentions": 0,
+    "assignments": 0,
+    "rfid_events": 0,
+    "incidents": 0,
+    "audit": 5,
+    "weekly_reports": 2
+  },
+  "contentVerified": true
+}

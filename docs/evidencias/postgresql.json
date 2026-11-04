@@ -1,0 +1,21 @@
+{
+  "generated_at": "2026-11-04T01:28:28.303Z",
+  "passed": true,
+  "motor": "PostgreSQL 17",
+  "system_suite_database": "PostgreSQL",
+  "administrator_concurrency_database": "PostgreSQL",
+  "migration_upgrade_database": "PGlite",
+  "analytics_reference_database": "PostgreSQL",
+  "physical_hardware": false,
+  "checks": [
+    "suite de integración sobre PostgreSQL",
+    "bloqueo concurrente real",
+    "cuenta de ejecución restringida",
+    "auditoría e incidencias no modificables",
+    "pg_dump cifrado AES-256-GCM",
+    "pg_restore en base aislada",
+    "conteos conservados"
+  ],
+  "backup_restore_seconds": 2.8692477000000034,
+  "production_rpo_rto_validated": false
+}

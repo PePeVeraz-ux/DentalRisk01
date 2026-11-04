@@ -1,0 +1,28 @@
+CRITERIOS DE ACEPTACIÓN — Sistema RFID de control operativo y productividad,,,
+,,,
+,,,
+ID,Área / Fase,Actividad relacionada del Gantt,Criterio de aceptación
+1,Requerimientos,Levantamiento y aprobación de requerimientos,Documento PDF con especificaciones firmado y autorizado por el cliente.
+2,Proceso de atención,Mapeo del proceso de atención y reglas de negocio,Diagrama de flujo aprobado que detalla las etapas de recepción hasta reciclaje.
+3,Catálogo,"Catálogo de servicios, dentistas y costos",Tablas maestras pobladas con los datos iniciales y validadas sin duplicados.
+4,Hardware,Adquisición e instalación/configuración de lectores RFID,Lectores conectados físicamente y reconocidos en el Administrador de Dispositivos de las estaciones.
+5,Tarjetas RFID,Adquisición de 50 tarjetas RFID,Inventario físico de 50 tarjetas con códigos UID legibles registrados en sistema.
+6,Base de datos,Implementación de base de datos,"Esquema relacional desplegado en servidor con tablas para pacientes, dentistas y transacciones."
+7,API,Desarrollo API REST con Node.js,Endpoints documentados en Postman con respuestas exitosas (código 200) ante peticiones de prueba.
+8,Check-in,Integración RFID y timestamps,Registro automatizado de la marca de tiempo (timestamp) y estación al escanear por primera vez.
+9,Recepción,Frontend de recepción,Interfaz web habilitada para asociar un paciente a una tarjeta disponible en menos de tres clics.
+10,Dashboard,Dashboard de administrador y KPIs,Panel visual con gráficos actualizados en tiempo real sobre tiempos de atención y métricas clave.
+11,Check-out,Flujo completo / segundo escaneo,Cierre automático del servicio activo al realizar el segundo escaneo de la tarjeta.
+12,Duración,Validación de exactitud de tiempos,Reporte de prueba donde el tiempo calculado coincide exactamente con la diferencia matemática de marcas de tiempo.
+13,Servicios,Pruebas con los 15 tipos de servicios,Matriz de pruebas ejecutada exitosamente para cada uno de los 15 servicios con sus respectivos costos.
+14,Reciclaje,Desvinculación y reciclaje de tarjetas,"Cambio de estatus de la tarjeta a ""Disponible"" en la base de datos tras la liberación del paciente."
+15,Incidencias,Tarjeta perdida o dañada,Guía paso a paso en PDF para la anulación de tarjetas y reasignación de folios sin alterar reportes.
+16,Reportes,Reporte semanal y ranking operativo,Archivo exportable en formato CSV o PDF con el consolidado de atenciones y tiempos por trabajador.
+17,Ingresos,Cálculo de ingresos diarios por dentista,Vista o reporte financiero que totaliza automáticamente los cobros por profesional al cierre del día.
+18,Integración,Flujo recepción → check-in → check-out → reciclaje,Bitácora de prueba de punta a punta (end-to-end) completada de forma digital y sin intervenciones manuales.
+19,Pruebas,Pruebas funcionales y de errores,Reporte de QA con 0 incidencias críticas abiertas y manejo controlado de excepciones.
+20,Aceptación final,Prueba de aceptación y rendimiento final,Acta de entrega firmada tras superar la prueba de estrés con concurrencia simulada.
+21,Administración,Medición del tiempo administrativo,Cronometraje de consultas en el sistema con un tiempo de respuesta menor a 5 minutos.
+22,Piloto,Piloto controlado en la clínica,Bitácora de incidencias reales documentada durante el turno de prueba en el entorno clínico.
+23,Productividad,"Correcciones, ajustes y validación de reportes",Versión estable del sistema desplegada con correcciones de errores detectados en el piloto.
+24,Cierre,Documentación final y manuales,Manual de usuario y técnico en PDF entregados y listos para consulta del personal.

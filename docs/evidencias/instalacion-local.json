@@ -1,0 +1,16 @@
+{
+  "generated_at": "2026-10-22T01:33:00.776Z",
+  "passed": true,
+  "application_version": "1.0.0",
+  "clinical_data": 0,
+  "synthetic_staff_accounts": 0,
+  "checks": [
+    "acceso del dueño",
+    "catálogos vacíos",
+    "solo una cuenta inicial",
+    "recepción oculta",
+    "cierre de sesión"
+  ],
+  "mode": "local-development",
+  "production_server_validated": false
+}

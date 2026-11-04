@@ -1,0 +1,29 @@
+erDiagram
+    direction LR
+    entityAgentAudit["agent_audit"] {
+        character_varying id PK
+        character_varying actor_id FK "nullable"
+    }
+    entityAgentUsers o|..o{ entityAgentAudit : "actor_id"
+    entityAgentLoginAttempts["agent_login_attempts"] {
+        character_varying key PK
+    }
+    entityAgentOperations["agent_operations"] {
+        character_varying id PK
+        character_varying owner_id FK
+        character_varying user_id FK
+    }
+    entityAgentUsers ||..o{ entityAgentOperations : "owner_id"
+    entityAgentUsers ||..o{ entityAgentOperations : "user_id"
+    entityAgentSessions["agent_sessions"] {
+        character_varying token_hash PK
+        character_varying user_id FK
+    }
+    entityAgentUsers ||..o{ entityAgentSessions : "user_id"
+    entityAgentUsers["agent_users"] {
+        character_varying id PK
+        character_varying_254_ email UK
+    }
+    entityAlembicVersion["alembic_version"] {
+        character_varying_32_ version_num PK
+    }
