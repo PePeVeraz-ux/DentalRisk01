@@ -1,15 +1,2 @@
 node_modules/
-.env
-.env.*.local
-.local/
-.next/
-.next-ui/
-.next-dev/
-.next-production-ui/
-coverage/
-backups/
-test-results/
-*.tsbuildinfo
-AgenteIA.zip
-Agente IA/
-.tmp-minuta-ec0935/
+
