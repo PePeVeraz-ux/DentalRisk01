@@ -1,0 +1,89 @@
+{
+  "at": "2026-11-12T02:11:28.099882+00:00",
+  "marker": "QA-20261111",
+  "counts": {
+    "dentists": {
+      "before": 1,
+      "after": 500
+    },
+    "users": {
+      "before": 4,
+      "after": 500
+    },
+    "services": {
+      "before": 0,
+      "after": 500
+    },
+    "stations": {
+      "before": 0,
+      "after": 500
+    },
+    "patients": {
+      "before": 0,
+      "after": 500
+    },
+    "cards": {
+      "before": 0,
+      "after": 500
+    },
+    "shifts": {
+      "before": 0,
+      "after": 500
+    },
+    "calendar_days": {
+      "before": 0,
+      "after": 500
+    },
+    "appointments": {
+      "before": 0,
+      "after": 500
+    },
+    "attentions": {
+      "before": 0,
+      "after": 500
+    },
+    "assignments": {
+      "before": 0,
+      "after": 500
+    },
+    "rfid_events": {
+      "before": 0,
+      "after": 500
+    },
+    "incidents": {
+      "before": 0,
+      "after": 500
+    },
+    "audit": {
+      "before": 23,
+      "after": 500
+    },
+    "weekly_reports": {
+      "before": 4,
+      "after": 500
+    },
+    "agent_operations": {
+      "before": 0,
+      "after": 500
+    },
+    "agent_audit": {
+      "before": 4,
+      "after": 500
+    },
+    "login_attempts": {
+      "before": 0,
+      "after": 500
+    },
+    "agent_login_attempts": {
+      "before": 1,
+      "after": 500
+    }
+  },
+  "exceptions": {
+    "operation_mutex": "Singleton id=1",
+    "schema_migrations": "Migration history",
+    "alembic_version": "Migration history",
+    "sessions": "Only real browser sessions",
+    "agent_sessions": "Only real agent tokens"
+  }
+}

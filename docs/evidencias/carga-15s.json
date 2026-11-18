@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-11-12T23:11:25.666Z",
+  "requested_seconds": 15,
+  "elapsed_seconds": 17.0527198,
+  "motor": "PostgreSQL",
+  "physical_hardware": false,
+  "historical_records": 10000,
+  "web_sessions": 10,
+  "application_version": "1.0.0",
+  "roles": {
+    "reception": 2,
+    "owner": 8
+  },
+  "read_endpoints": [
+    "attentions",
+    "reports/executive"
+  ],
+  "stations": 4,
+  "requests": 120,
+  "errors": [],
+  "rfid_requests": 32,
+  "max_rfid_ms": 134.65720000000056,
+  "p95_rfid_ms": 96.49459999999999,
+  "integrity": {
+    "count": 10016,
+    "revenue": "100160000"
+  },
+  "passed": true
+}

@@ -78,6 +78,16 @@ await db.transaction(async (tx) => {
     patient,
   ]);
   await tx.query("INSERT INTO cards(id,uid) VALUES($1,'QA-HISTORY')", [card]);
+  const extraCards = Array.from({ length: 501 }, (_, index) => [
+    id(),
+    `QA-FILLER-${String(index + 1).padStart(4, '0')}`,
+  ]);
+  await tx.query(
+    `INSERT INTO cards(id,uid) VALUES ${extraCards
+      .map((_, index) => `($${index * 2 + 1},$${index * 2 + 2})`)
+      .join(',')}`,
+    extraCards.flat(),
+  );
   await tx.query(
     "INSERT INTO attentions(id,patient_id,dentist_id,service_id,station_id,shift_id,card_id,price_cents,status,started_at,ended_at,released_at) VALUES($1,$2,$3,$4,$5,$6,$7,20000,'COMPLETED',$8,$9,$9)",
     [
@@ -315,8 +325,21 @@ try {
     .locator('section')
     .filter({ has: reception.getByRole('heading', { name: 'Simulador de lector RFID' }) });
   if (!productionMode) {
+    await simulator.getByLabel('Tarjeta', { exact: true }).locator('option').nth(503).waitFor({ state: 'attached' });
+    assert.ok(
+      (await simulator.getByLabel('Tarjeta', { exact: true }).locator('option').count()) >= 504,
+      'El simulador debe cargar también la segunda página de tarjetas',
+    );
+    await simulator.getByLabel('Buscar estación').fill('sin coincidencias');
+    assert.equal(await simulator.getByLabel('Estación', { exact: true }).locator('option').count(), 1);
+    await simulator.getByLabel('Buscar estación').fill('Consultorio');
     await simulator.getByLabel('Estación', { exact: true }).selectOption(uid.station);
+    await simulator.getByLabel('Buscar estación').fill('sin coincidencias');
+    assert.equal(await simulator.getByLabel('Estación', { exact: true }).inputValue(), uid.station);
+    await simulator.getByLabel('Buscar estación').fill('Consultorio');
+    await simulator.getByLabel('Buscar tarjeta').fill('QA-CARD');
     await simulator.getByLabel('Tarjeta', { exact: true }).selectOption({ label: 'QA-CARD' });
+    checks.push('simulador: búsqueda de estación/tarjeta y conservación de la selección');
   } else assert.equal(await simulator.count(), 0);
   const scan = async () => {
     if (!productionMode) await simulator.getByRole('button', { name: 'Simular escaneo' }).click();
@@ -334,6 +357,17 @@ try {
   await scan();
   await attentionRow.getByText('En atención', { exact: true }).waitFor();
   if (!productionMode) await reception.getByText('Entrada confirmada', { exact: true }).waitFor();
+  const inUse = (await db.query(
+    'SELECT a.status, a.station_id, a.card_id, c.uid FROM attentions a JOIN cards c ON c.id=a.card_id WHERE a.card_id=$1',
+    [uid.card],
+  )).rows[0];
+  assert.deepEqual(inUse, {
+    status: 'IN_PROGRESS',
+    station_id: uid.station,
+    card_id: uid.card,
+    uid: 'QA-CARD',
+  });
+  await screenshot(reception, 'tarjeta-estacion-en-uso');
   await delay(2300);
   await scan();
   await attentionRow.getByText('Completada', { exact: true }).waitFor();

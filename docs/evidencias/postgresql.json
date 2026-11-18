@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-04T01:28:28.303Z",
+  "generated_at": "2026-11-12T02:27:33.563Z",
   "passed": true,
   "motor": "PostgreSQL 17",
   "system_suite_database": "PostgreSQL",
@@ -16,6 +16,6 @@
     "pg_restore en base aislada",
     "conteos conservados"
   ],
-  "backup_restore_seconds": 2.8692477000000034,
+  "backup_restore_seconds": 1.9778365000000013,
   "production_rpo_rto_validated": false
 }

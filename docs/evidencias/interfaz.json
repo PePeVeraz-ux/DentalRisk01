@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-04T09:15:15.530Z",
+  "generated_at": "2026-11-12T03:00:00.223Z",
   "passed": true,
   "isolated_database": true,
   "desktop": "1440x1000",
@@ -9,6 +9,7 @@
   "checks": [
     "dueño: panel ejecutivo, ruta persistente y operación oculta",
     "alta de cuentas por rol desde la interfaz",
+    "simulador: búsqueda de estación/tarjeta y conservación de la selección",
     "recepción: paciente, cita, horario clínico, vinculación, entrada/salida y liberación",
     "restricción de rutas y API de administración",
     "dentista: indicadores y atenciones propios, incluso con filtro ajeno",

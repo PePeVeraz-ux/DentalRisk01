@@ -6,7 +6,7 @@ Estado inicial: **pendiente de validación clínica**. Completar sobre la versi�
 | --- | --- | --- | --- |
 | Catálogo de 15 servicios y precios reales | Administración | Pendiente | Pendiente |
 | Dentistas, turnos y calendario operado | Administración | Pendiente | Pendiente |
-| Inventario físico de 50 tarjetas y lectores | Responsable técnico | Pendiente | Pendiente |
+| Inventario físico de 50 tarjetas y lectores para 4 consultorios | Responsable técnico | Pendiente | Pendiente |
 | Lectura a 3–5 cm y estación correcta | Responsable técnico | Pendiente | Pendiente |
 | Accesos por rol y revocación | Responsable técnico | Pendiente | Pendiente |
 | HTTPS y equipo de producción | Responsable técnico | Pendiente | Pendiente |

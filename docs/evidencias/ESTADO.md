@@ -1,5 +1,7 @@
 # Estado de verificación de DentalRisk 1.0.0
 
+**Actualización del 12 de noviembre de 2026:** la instalación local compartida y el ESP conectado se verificaron de nuevo. La carga QA fue corregida a cuatro consultorios y 50 tarjetas; los conteos y eventos están en [datos-coherentes-2026-11-12.json](datos-coherentes-2026-11-12.json) y el recorrido del ESP en [CORRECCION_COHERENCIA_Y_ESP_2026-11-12.md](CORRECCION_COHERENCIA_Y_ESP_2026-11-12.md). El informe que sigue conserva el corte de octubre. La nueva prueba de carga de 30 minutos se interrumpió a petición del usuario tras 1.020 segundos, 7.470 solicitudes y cero errores observados; la latencia máxima y la integridad final no se midieron. Véase [registro parcial](carga-1020s-parcial-2026-11-12.json).
+
 Fecha de cierre: 22 de octubre de 2026.
 
 La entrega implementa dirección, recepción, dentista y soporte con rutas persistentes y permisos en servidor. Incluye panel ejecutivo, comparativos, evolución diaria, desempeño por dentista, agenda, atención RFID, incidencias, correcciones auditadas, exportaciones y continuidad.

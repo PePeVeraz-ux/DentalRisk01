@@ -38,6 +38,49 @@ const localInput = (s: string, timezone = 'America/Tijuana') =>
   DateTime.fromISO(s).setZone(timezone).toFormat("yyyy-MM-dd'T'HH:mm");
 const today = () => new Date().toLocaleDateString('en-CA');
 const names = (row: Item) => row.name ?? row.uid ?? row.reference ?? row.id;
+function SimulatorSelect({
+  label,
+  name,
+  items,
+  valueOf,
+}: {
+  label: string;
+  name: string;
+  items: Item[];
+  valueOf: (item: Item) => string;
+}) {
+  const [query, setQuery] = useState('');
+  const [selected, setSelected] = useState('');
+  const matches = items.filter((item) =>
+    String(names(item)).toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()),
+  );
+  const selectedItem = items.find((item) => valueOf(item) === selected);
+  if (selectedItem && !matches.some((item) => valueOf(item) === selected)) matches.unshift(selectedItem);
+  return (
+    <div className="simulator-select">
+      <label>
+        Buscar {label.toLocaleLowerCase()}
+        <input
+          aria-label={`Buscar ${label.toLocaleLowerCase()}`}
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder={label === 'Estación' ? 'Buscar por nombre…' : 'Buscar por UID…'}
+        />
+      </label>
+      <label>
+        {label}
+        <select aria-label={label} name={name} required value={selected} onChange={(event) => setSelected(event.target.value)}>
+          <option value="">Seleccionar…</option>
+          {matches.map((item) => (
+            <option key={item.id} value={valueOf(item)}>
+              {names(item)}
+            </option>
+          ))}
+        </select>
+      </label>
+    </div>
+  );
+}
 const catalogConfig: Record<string, { title: string; fields: Field[]; columns: [string, string][] }> = {
   patients: {
     title: 'Pacientes',
@@ -448,9 +491,20 @@ export default function Home() {
           const query = ['attentions', 'appointments'].includes(endpoint)
             ? `?limit=50&offset=${(endpoint === 'attentions' ? attentionPage : appointmentPage) * 50}&q=${encodeURIComponent(clinicalSearch)}${clinicalDay ? '&day=' + clinicalDay : ''}${clinicalStatus ? '&status=' + clinicalStatus : ''}`
             : endpoint === 'patients'
-              ? `?q=${encodeURIComponent(patientQuery)}`
-              : '';
-          return [endpoint, await api('/' + endpoint + query)] as const;
+              ? `?limit=500&q=${encodeURIComponent(patientQuery)}`
+              : ['dentists', 'services', 'stations', 'shifts', 'cards'].includes(endpoint)
+                ? '?limit=500'
+                : '';
+          const result = await api('/' + endpoint + query);
+          if (query.includes('limit=500') && result.total > result.items.length) {
+            for (let offset = result.items.length; offset < result.total; ) {
+              const next = await api('/' + endpoint + query + `&offset=${offset}`);
+              if (!next.items.length) break;
+              result.items.push(...next.items);
+              offset += next.items.length;
+            }
+          }
+          return [endpoint, result] as const;
         }),
       );
       const [r, o, d, config, me] = await Promise.all([
@@ -1330,16 +1384,8 @@ export default function Home() {
                         }, 'Lectura procesada');
                       }}
                     >
-                      <FieldInput field={{ key: 'station_id', label: 'Estación', options: 'stations' }} />
-                      <label>
-                        Tarjeta
-                        <select aria-label="Tarjeta" name="uid" required>
-                          <option value="">Seleccionar…</option>
-                          {(data.cards ?? []).map((c) => (
-                            <option key={c.id}>{c.uid}</option>
-                          ))}
-                        </select>
-                      </label>
+                      <SimulatorSelect label="Estación" name="station_id" items={data.stations ?? []} valueOf={(item) => item.id} />
+                      <SimulatorSelect label="Tarjeta" name="uid" items={data.cards ?? []} valueOf={(item) => item.uid} />
                       <button className="primary" disabled={pending}>
                         Simular escaneo
                       </button>

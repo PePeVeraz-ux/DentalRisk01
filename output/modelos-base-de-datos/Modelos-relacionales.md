@@ -4,6 +4,8 @@ DentalRisk y Agente IA · PostgreSQL · Esquema verificado el 3 de noviembre de 
 
 Son dos bases independientes. No existen claves foráneas entre ellas. Este documento describe el esquema implementado, no un modelo propuesto.
 
+**Actualización del 9 de noviembre de 2026:** esta es una fotografía histórica. La instalación local ya une ambos servicios en la base `dentalrisk`; `agent_users` se integró a `users` y las referencias de las tablas `agent_*` apuntan a esa tabla. Consultar `docs/arquitectura/003-base-compartida.md` para el diseño vigente.
+
 ## Convenciones
 
 **PK:** clave primaria. **FK:** clave foránea. **UK:** unicidad de una columna. **?**: admite NULL. Las restricciones UNIQUE compuestas y los índices únicos parciales se detallan aparte.

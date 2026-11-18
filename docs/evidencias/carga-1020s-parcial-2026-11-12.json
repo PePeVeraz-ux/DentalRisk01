@@ -1,0 +1,17 @@
+{
+  "date_local": "2026-11-12",
+  "requested_seconds": 1800,
+  "last_observed_seconds": 1020,
+  "motor": "PostgreSQL",
+  "database": "isolated disposable database removed after interruption",
+  "web_sessions": 10,
+  "stations": 4,
+  "historical_records": 10000,
+  "last_observed_requests": 7470,
+  "last_observed_errors": 0,
+  "interrupted_at_user_request": true,
+  "max_rfid_ms": null,
+  "final_integrity_checked": false,
+  "passed": null,
+  "note": "Partial progress log only; 30-minute latency objective was not evaluated."
+}

@@ -6,7 +6,9 @@ Versión 1.0.0. Aplicación para dirección, recepción, citas, control RFID de 
 
 Requiere Node.js 24, npm y PostgreSQL. La API exige `DATABASE_URL`; PGlite queda para pruebas y transferencia explícita de datos antiguos.
 
-En este equipo, PostgreSQL 17 está en `127.0.0.1:5432`, con bases y usuarios separados: `dentalrisk` y `dentalrisk_agent`. Las conexiones están en el `.env` de cada proyecto. Desde esta carpeta, ejecutar `npm run db:start` después de reiniciar Windows y luego `npm run dev`. `npm run db:stop` detiene PostgreSQL conservando los datos en `.local/postgres`. No está registrado como servicio de Windows. No repetir `bootstrap` en esta instalación ya migrada.
+En este equipo, PostgreSQL 17 está en `127.0.0.1:5432`. La aplicación y el Agente IA utilizan la misma base `dentalrisk`, con usuarios PostgreSQL distintos. La antigua base `dentalrisk_agent` se conserva como origen previo a la unión. Las conexiones están en el `.env` de cada proyecto. Desde esta carpeta, ejecutar `npm run db:start` después de reiniciar Windows y luego `npm run dev`. `npm run db:stop` detiene PostgreSQL conservando los datos en `.local/postgres`. No está registrado como servicio de Windows. No repetir `bootstrap` en esta instalación ya migrada.
+
+La estructura y las rutas compartidas se documentan en [Base compartida con el Agente IA](docs/arquitectura/003-base-compartida.md).
 
 Para una instalación nueva, configurar `DATABASE_URL` en `.env` antes de ejecutar `bootstrap`:
 
@@ -58,7 +60,7 @@ npm run load
 
 `npm run check` ejecuta tipos, pruebas, compilación, contratos y auditoría con detención al primer fallo y registra evidencia y huella del código. `npm run test:postgres` prepara una instancia PostgreSQL 17 aislada y comprueba la suite, permisos y recuperación; en Windows requiere `PG_CLIENT_BIN` con pg_dump y pg_restore para la parte de respaldo. `PG_LOAD=true` añade la carga de 30 minutos, y `PG_TEST_PORT` permite cambiar su puerto. El comando no instala un servicio del sistema y conserva sus datos de prueba bajo `.local/`.
 
-La prueba de carga usa una base aislada, 10 sesiones, dos estaciones simuladas y 10,000 atenciones históricas durante 1,800 segundos. `LOAD_SECONDS` permite un ensayo breve. Para PostgreSQL real, proporcionar `TEST_DATABASE_URL` de una base vacía y aislada. Nunca usar la base clínica. Los resultados se guardan en `docs/evidencias/` con el motor y duración reales.
+La prueba de carga usa una base aislada, 10 sesiones, cuatro estaciones simuladas por defecto y 10,000 atenciones históricas durante 1,800 segundos. `LOAD_SECONDS` permite un ensayo breve y `LOAD_STATIONS` ajusta el número de estaciones. Para PostgreSQL real, proporcionar `TEST_DATABASE_URL` de una base vacía y aislada o usar `scripts/run_load_isolated.ps1`. Nunca usar la base clínica. Los resultados se guardan en `docs/evidencias/` con el motor y duración reales.
 
 `npm run test:ui` inicia servidores propios en los puertos 3311/4311, usa una base en memoria y credenciales efímeras. Verifica los cuatro roles, alta de cuentas, paciente, cita, zona horaria, ciclo RFID, permiso excepcional, exportaciones, desconexión y móvil. No requiere la base clínica ni `.env`. En Windows usa Chrome instalado; `BROWSER_EXECUTABLE` permite cambiar ejecutable y `UI_TEST_PORT` el puerto web. En CI utiliza Chromium de Playwright. Guarda capturas en `.local/screenshots/` y evidencia en `docs/evidencias/interfaz.json`.
 
@@ -87,4 +89,4 @@ La aplicación clínica no incorpora inferencia IA, voz ni ESP32-S3 en esta entr
 
 ## Servicio del agente
 
-La carpeta `Agente IA/` contiene un proyecto FastAPI independiente: usuarios por rol, Argon2id, JWT revocables y perfiles privados en MinIO. El agente del ESP puede conectarse por HTTP para crear usuarios y asignarles sus imágenes adjuntas. Tiene un repositorio propio en la rama local `v01`, documentación y pruebas. La conexión con indicadores clínicos queda pendiente; no utiliza la base clínica ni cambia las sesiones de esta aplicación.
+La carpeta `Agente IA/` contiene el servicio FastAPI del asistente ESP: Argon2id, JWT revocables y perfiles privados en MinIO. En esta instalación local ambos servicios comparten PostgreSQL `dentalrisk` y la tabla `users`; las tablas `agent_*` conservan sesiones, operaciones y auditoría del agente. Las rutas clínicas del agente consultan registros autorizados sin identidad de pacientes. El ESP puede crear cuentas no administrativas y asignarles fotos mediante la API delegada. La inferencia ocurre en el ESP; esta API no realiza diagnósticos ni inferencia clínica. La demostración Compose independiente sigue disponible para pruebas aisladas y no representa el despliegue compartido.

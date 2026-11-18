@@ -440,8 +440,7 @@ td {
   padding: 15px 12px;
   font-size: 12px;
   max-width: 300px;
-  white-space: normal;
-  overflow-wrap: anywhere;
+  white-space: nowrap;
 }
 tr:last-child td {
   border-bottom: 0;

@@ -1,0 +1,53 @@
+{
+  "at": "2026-11-12T23:29:35.015019+00:00",
+  "database": "dentalrisk",
+  "marker": "QA-20261112",
+  "counts": {
+    "users": 14,
+    "dentists": 8,
+    "services": 15,
+    "stations": 4,
+    "patients": 500,
+    "cards": 50,
+    "shifts": 5,
+    "calendar_days": 101,
+    "appointments": 500,
+    "attentions": 500,
+    "assignments": 500,
+    "rfid_events": 956,
+    "incidents": 5,
+    "weekly_reports": 20,
+    "agent_operations": 2,
+    "agent_audit": 12,
+    "login_attempts": 0,
+    "agent_login_attempts": 4
+  },
+  "statuses": {
+    "cards": {
+      "ASSIGNED": 20,
+      "AVAILABLE": 25,
+      "BLOCKED": 5
+    },
+    "appointments": {
+      "CANCELLED": 5,
+      "SCHEDULED": 20,
+      "ATTENDED": 475
+    },
+    "attentions": {
+      "IN_PROGRESS": 1,
+      "COMPLETED": 475,
+      "PENDING": 19,
+      "INCIDENT": 5
+    }
+  },
+  "rfid_events_by_code": {
+    "CHECK_OUT": 475,
+    "CHECK_IN": 481
+  },
+  "stations_with_physical_credentials": 0,
+  "completed_without_matching_check_in_out": 0,
+  "calendar_weekday_mismatches": 0,
+  "empty_weekly_reports": 0,
+  "old_qa_patients_remaining": 0,
+  "status": "passed"
+}

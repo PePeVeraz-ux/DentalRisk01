@@ -1,0 +1,77 @@
+# Add to deploy/compose.yaml after the clinic database has been migrated.
+# This development overlay shares the same PostgreSQL database with both APIs.
+services:
+  agent-minio:
+    image: coollabsio/minio@sha256:4f75fd76598afa23919555d1363e1fb13c632d9bcd4ce8edcf21d3cca2ed0579
+    command: server /data --console-address :9001
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:?Configure MINIO_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:?Configure MINIO_SECRET_KEY}
+    volumes:
+      - agent_objects:/data
+    networks: [private]
+
+  agent-migrate:
+    build:
+      context: ../Agente IA
+    environment:
+      ENVIRONMENT: development
+      DATABASE_URL: postgresql+psycopg://dentalrisk_owner:${POSTGRES_OWNER_PASSWORD:?Configure POSTGRES_OWNER_PASSWORD}@database:5432/dentalrisk
+      AGENT_DB_PASSWORD: ${AGENT_DB_PASSWORD:?Configure AGENT_DB_PASSWORD}
+      SECRET_KEY: ${AGENT_SECRET_KEY:?Configure AGENT_SECRET_KEY}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:?Configure MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:?Configure MINIO_SECRET_KEY}
+      CLINICAL_CONNECTOR_ENABLED: "true"
+    command: ["python", "scripts/provision_shared_deploy.py"]
+    depends_on:
+      database: {condition: service_healthy}
+    networks: [private]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+
+  agent-storage:
+    build:
+      context: ../Agente IA
+    environment:
+      ENVIRONMENT: development
+      DATABASE_URL: postgresql+psycopg://dentalrisk_agent:${AGENT_DB_PASSWORD:?Configure AGENT_DB_PASSWORD}@database:5432/dentalrisk
+      SECRET_KEY: ${AGENT_SECRET_KEY:?Configure AGENT_SECRET_KEY}
+      MINIO_ENDPOINT: http://agent-minio:9000
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:?Configure MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:?Configure MINIO_SECRET_KEY}
+      MINIO_BUCKET: ${MINIO_BUCKET:-dentalrisk-profiles}
+      CLINICAL_CONNECTOR_ENABLED: "true"
+    command: ["python", "scripts/provision_storage.py"]
+    restart: on-failure:5
+    depends_on:
+      agent-minio: {condition: service_started}
+      agent-migrate: {condition: service_completed_successfully}
+    networks: [private]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+
+  agent-api:
+    build:
+      context: ../Agente IA
+    environment:
+      ENVIRONMENT: development
+      DATABASE_URL: postgresql+psycopg://dentalrisk_agent:${AGENT_DB_PASSWORD:?Configure AGENT_DB_PASSWORD}@database:5432/dentalrisk
+      SECRET_KEY: ${AGENT_SECRET_KEY:?Configure AGENT_SECRET_KEY}
+      MINIO_ENDPOINT: http://agent-minio:9000
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:?Configure MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:?Configure MINIO_SECRET_KEY}
+      MINIO_BUCKET: ${MINIO_BUCKET:-dentalrisk-profiles}
+      CLINICAL_CONNECTOR_ENABLED: "true"
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      agent-storage: {condition: service_completed_successfully}
+    networks: [private]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    read_only: true
+    tmpfs:
+      - /tmp:rw,nosuid,noexec,size=32m
+
+volumes:
+  agent_objects:

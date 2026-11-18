@@ -10,6 +10,9 @@ import { digest, id, token } from '../apps/api/src/domain.js';
 const seconds = Number(process.env.LOAD_SECONDS ?? 1800);
 if (!Number.isFinite(seconds) || seconds < 5 || seconds > 3600)
   throw new Error('LOAD_SECONDS debe estar entre 5 y 3600.');
+const stationCount = Number(process.env.LOAD_STATIONS ?? 4);
+if (!Number.isInteger(stationCount) || stationCount < 1 || stationCount > 10)
+  throw new Error('LOAD_STATIONS debe estar entre 1 y 10.');
 // An isolated compatible database is used unless a dedicated empty PostgreSQL test URL is explicitly supplied.
 if (process.env.NODE_ENV === 'production') throw new Error('Carga sintética prohibida en producción');
 const db = process.env.TEST_DATABASE_URL
@@ -27,10 +30,10 @@ const admin = id(),
   service = id(),
   patient = id(),
   shift = id(),
-  stations = [id(), id()],
-  dentists = [id(), id()],
-  cards = [id(), id()],
-  credentials = [token(), token()];
+  stations = Array.from({ length: stationCount }, () => id()),
+  dentists = Array.from({ length: stationCount }, () => id()),
+  cards = Array.from({ length: stationCount }, () => id()),
+  credentials = Array.from({ length: stationCount }, () => token());
 const password = token(),
   hash = await argon2.hash(password);
 await db.transaction(async (tx) => {
@@ -52,7 +55,7 @@ await db.transaction(async (tx) => {
     id(),
     shift,
   ]);
-  for (let i = 0; i < 2; i++) {
+  for (let i = 0; i < stationCount; i++) {
     await tx.query('INSERT INTO dentists(id,name) VALUES($1,$2)', [dentists[i], `LOAD Dentista ${i}`]);
     await tx.query('INSERT INTO stations(id,name,token_hash) VALUES($1,$2,$3)', [
       stations[i],
@@ -102,7 +105,7 @@ async function call(kind: string, url: string, payload?: any, stationIndex?: num
 }
 const started = performance.now();
 console.log(
-  `Carga iniciada: ${seconds}s, 10 sesiones, 2 estaciones, 10,000 registros históricos. Motor: ${process.env.TEST_DATABASE_URL ? 'PostgreSQL' : 'PGlite de pruebas'}.`,
+  `Carga iniciada: ${seconds}s, 10 sesiones, ${stationCount} estaciones, 10,000 registros históricos. Motor: ${process.env.TEST_DATABASE_URL ? 'PostgreSQL' : 'PGlite de pruebas'}.`,
 );
 const progress = setInterval(
   () =>
@@ -126,7 +129,7 @@ try {
       }
     })(),
   );
-  const readers = Array.from({ length: 2 }, (_, i) =>
+  const readers = Array.from({ length: stationCount }, (_, i) =>
     (async () => {
       while (!stopping) {
         const attention = await call(
@@ -141,7 +144,7 @@ try {
             card_id: cards[i],
           },
           undefined,
-          i,
+          i % 2,
         );
         if (attention.statusCode !== 200) {
           await delay(3000);
@@ -168,7 +171,7 @@ try {
           i,
         );
         if (exit.json().code !== 'CHECK_OUT') errors.push('Salida no aceptada');
-        await call('release', `/attentions/${attention.json().id}/release`, {}, undefined, i);
+        await call('release', `/attentions/${attention.json().id}/release`, {}, undefined, i % 2);
         await delay(1000);
       }
     })(),
@@ -196,7 +199,7 @@ try {
     application_version: '1.0.0',
     roles: { reception: 2, owner: 8 },
     read_endpoints: ['attentions', 'reports/executive'],
-    stations: 2,
+    stations: stationCount,
     requests: measurements.length,
     errors,
     rfid_requests: rfid.length,
