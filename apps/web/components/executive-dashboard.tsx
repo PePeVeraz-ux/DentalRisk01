@@ -35,7 +35,7 @@ function Trend({ rows }: { rows: Row[] }) {
         </div>
         <div className="tabs compact" aria-label="Métrica del gráfico">
           {[
-            ['patients', 'Pacientes distintos'],
+            ['patients', 'Pacientes'],
             ['revenue_cents', 'Valor de servicios'],
             ['attentions', 'Atenciones'],
           ].map(([key, label]) => (
@@ -59,7 +59,7 @@ function Trend({ rows }: { rows: Row[] }) {
           metric === 'revenue_cents'
             ? 'Evolución diaria del valor de servicios en MXN'
             : metric === 'patients'
-              ? 'Pacientes distintos por día'
+              ? 'Pacientes por día'
               : 'Evolución diaria de atenciones completadas'
         }
       >
@@ -96,7 +96,7 @@ function Trend({ rows }: { rows: Row[] }) {
                   fill="#60a5fa"
                 >
                   <title>
-                    {rows[i].day}: {rows[i].patients} pacientes distintos
+                    {rows[i].day}: {rows[i].patients} pacientes
                   </title>
                 </rect>
               ) : (
@@ -134,7 +134,7 @@ function Trend({ rows }: { rows: Row[] }) {
               <tr>
                 <th>Fecha</th>
                 <th>Atenciones</th>
-                <th>Pacientes distintos</th>
+                <th>Pacientes</th>
                 <th>Valor MXN</th>
               </tr>
             </thead>
@@ -207,7 +207,7 @@ export function ExecutiveDashboard({
     }
   }
   const metrics = [
-    ['patients', 'Pacientes distintos', 'Personas distintas en el periodo'],
+    ['patients', 'Pacientes', 'Personas atendidas en el periodo'],
     ['attentions', 'Atenciones completadas', 'Servicios con entrada y salida'],
     ['revenue_cents', 'Valor de servicios', 'MXN · Servicios completados'],
   ];
@@ -264,7 +264,9 @@ export function ExecutiveDashboard({
             ['shift_id', 'shifts', 'Turno'],
           ] as const
         )
-          .filter(([key]) => !own || key !== 'dentist_id')
+          .filter(([key]) =>
+            page === 'dashboard' ? !own && key === 'dentist_id' : !own || key !== 'dentist_id',
+          )
           .map(([key, source, label]) => (
             <label key={key}>
               {label}
@@ -296,19 +298,21 @@ export function ExecutiveDashboard({
                       ? `${number(report.summary[key])} min`
                       : number(report.summary[key])}
                 </strong>
-                <Comparison value={report.comparison[key]} />
+                {page !== 'dashboard' && <Comparison value={report.comparison[key]} />}
                 <small>{description}</small>
               </article>
             ))}
           </div>
-          <p className="muted small">
-            Comparación: {report.previous_period.from} → {report.previous_period.to}. Un aumento de duración o
-            tiempo muerto requiere revisión; no implica una mejora.
-          </p>
+          {page !== 'dashboard' && (
+            <p className="muted small">
+              Comparación: {report.previous_period.from} → {report.previous_period.to}. Un aumento de duración
+              o tiempo muerto requiere revisión; no implica una mejora.
+            </p>
+          )}
           {page === 'dashboard' && (
             <>
               <Trend rows={report.trend} />
-              <div className="dashboard-grid">
+              <div className="dashboard-grid dashboard-overview-grid">
                 <section className="panel">
                   <div className="panel-heading">
                     <div>
@@ -316,7 +320,7 @@ export function ExecutiveDashboard({
                       <p>
                         {own
                           ? 'Distribución de tus atenciones completadas.'
-                          : 'Pacientes distintos por dentista. Los empates comparten posición.'}
+                          : 'Pacientes por dentista. Los empates comparten posición.'}
                       </p>
                     </div>
                   </div>
@@ -343,43 +347,45 @@ export function ExecutiveDashboard({
                     <div className="empty">Sin atenciones completadas en el periodo seleccionado.</div>
                   )}
                 </section>
-                <section className="panel insights">
-                  <h2>Resumen operativo</h2>
-                  <div>
-                    <span>Duración promedio</span>
-                    <strong>{minutes(report.summary.average_minutes)} min</strong>
-                    <small>Servicios completados; comparar por tipo de servicio.</small>
-                  </div>
-                  <div>
-                    <span>Tiempo entre consultas</span>
-                    <strong>{minutes(report.summary.idle_minutes)} min</strong>
-                    <small>Intervalos observados; excluye descansos y periodos no operados.</small>
-                  </div>
-                  <div>
-                    <span>Pacientes por turno</span>
-                    <strong>
-                      {report.summary.patients_per_shift === null
-                        ? 'No calculable'
-                        : number(report.summary.patients_per_shift)}
-                    </strong>
-                    <small>
-                      {report.summary.operated_shifts} turnos operados registrados, incluidos los de cero
-                      atenciones.
-                    </small>
-                  </div>
-                  <div>
-                    <span>Variación de pacientes por turno</span>
-                    <strong>
-                      {report.comparison.patients_per_shift.percent === null
-                        ? 'No calculable'
-                        : `${number(report.comparison.patients_per_shift.percent)}%`}
-                    </strong>
-                    <small>
-                      Requiere periodos operativos comparables; el 15% es una meta, no un resultado
-                      garantizado.
-                    </small>
-                  </div>
-                </section>
+                {page !== 'dashboard' && (
+                  <section className="panel insights">
+                    <h2>Resumen operativo</h2>
+                    <div>
+                      <span>Duración promedio</span>
+                      <strong>{minutes(report.summary.average_minutes)} min</strong>
+                      <small>Servicios completados; comparar por tipo de servicio.</small>
+                    </div>
+                    <div>
+                      <span>Tiempo entre consultas</span>
+                      <strong>{minutes(report.summary.idle_minutes)} min</strong>
+                      <small>Intervalos observados; excluye descansos y periodos no operados.</small>
+                    </div>
+                    <div>
+                      <span>Pacientes por turno</span>
+                      <strong>
+                        {report.summary.patients_per_shift === null
+                          ? 'No calculable'
+                          : number(report.summary.patients_per_shift)}
+                      </strong>
+                      <small>
+                        {report.summary.operated_shifts} turnos operados registrados, incluidos los de cero
+                        atenciones.
+                      </small>
+                    </div>
+                    <div>
+                      <span>Variación de pacientes por turno</span>
+                      <strong>
+                        {report.comparison.patients_per_shift.percent === null
+                          ? 'No calculable'
+                          : `${number(report.comparison.patients_per_shift.percent)}%`}
+                      </strong>
+                      <small>
+                        Requiere periodos operativos comparables; el 15% es una meta, no un resultado
+                        garantizado.
+                      </small>
+                    </div>
+                  </section>
+                )}
               </div>
             </>
           )}
@@ -441,63 +447,75 @@ export function ExecutiveDashboard({
               )}
             </section>
           )}
-          <section className="panel">
-            <div className="panel-heading">
-              <div>
-                <h2>{own ? 'Mi productividad por servicio' : 'Productividad por servicio'}</h2>
-                <p>Los importes representan el valor operativo; no acreditan cobros ni utilidad.</p>
-              </div>
-              <div className="actions">
-                {['csv', 'pdf', 'xlsx'].map((format) => (
-                  <button
-                    className="button"
-                    key={format}
-                    disabled={Boolean(exporting)}
-                    onClick={() => download(format)}
-                  >
-                    {exporting === format
-                      ? 'Generando…'
-                      : format === 'xlsx'
-                        ? 'Excel ↓'
-                        : format.toUpperCase() + ' ↓'}
-                  </button>
-                ))}
-              </div>
-            </div>
-            {exporting && <p role="status">Preparando archivo con el periodo y los filtros seleccionados…</p>}
-            {exportError && (
-              <p className="alert error" role="alert">
-                {exportError}
-              </p>
-            )}
-            <div className="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Dentista</th>
-                    <th>Servicio</th>
-                    <th>Atenciones</th>
-                    <th>Pacientes</th>
-                    <th>Promedio min</th>
-                    <th>Valor MXN</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {report.groups.map((g: Row) => (
-                    <tr key={g.dentist_id + g.service_id}>
-                      <td>{g.dentist}</td>
-                      <td>{g.service}</td>
-                      <td>{g.attentions}</td>
-                      <td>{g.patients}</td>
-                      <td>{minutes(g.average_minutes)}</td>
-                      <td>{money(g.revenue_cents)}</td>
-                    </tr>
+          {page === 'dashboard' && !own && (
+            <p className="muted small">
+              El valor mostrado corresponde a servicios completados. No confirma pagos recibidos ni descuenta
+              costos.
+            </p>
+          )}
+          {page !== 'dashboard' && (
+            <section className="panel">
+              <div className="panel-heading">
+                <div>
+                  <h2>{own ? 'Mi productividad por servicio' : 'Productividad por servicio'}</h2>
+                  <p>Los importes representan el valor operativo; no acreditan cobros ni utilidad.</p>
+                </div>
+                <div className="actions">
+                  {['csv', 'pdf', 'xlsx'].map((format) => (
+                    <button
+                      className="button"
+                      key={format}
+                      disabled={Boolean(exporting)}
+                      onClick={() => download(format)}
+                    >
+                      {exporting === format
+                        ? 'Generando…'
+                        : format === 'xlsx'
+                          ? 'Excel ↓'
+                          : format.toUpperCase() + ' ↓'}
+                    </button>
                   ))}
-                </tbody>
-              </table>
-            </div>
-            {!report.groups.length && <div className="empty">Sin servicios completados en este periodo.</div>}
-          </section>
+                </div>
+              </div>
+              {exporting && (
+                <p role="status">Preparando archivo con el periodo y los filtros seleccionados…</p>
+              )}
+              {exportError && (
+                <p className="alert error" role="alert">
+                  {exportError}
+                </p>
+              )}
+              <div className="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Dentista</th>
+                      <th>Servicio</th>
+                      <th>Atenciones</th>
+                      <th>Pacientes</th>
+                      <th>Promedio min</th>
+                      <th>Valor MXN</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {report.groups.map((g: Row) => (
+                      <tr key={g.dentist_id + g.service_id}>
+                        <td>{g.dentist}</td>
+                        <td>{g.service}</td>
+                        <td>{g.attentions}</td>
+                        <td>{g.patients}</td>
+                        <td>{minutes(g.average_minutes)}</td>
+                        <td>{money(g.revenue_cents)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {!report.groups.length && (
+                <div className="empty">Sin servicios completados en este periodo.</div>
+              )}
+            </section>
+          )}
           <p className="muted small">
             Actualización:{' '}
             {DateTime.fromISO(report.generated_at).setZone(zone).toFormat('dd/MM/yyyy HH:mm:ss')} ·

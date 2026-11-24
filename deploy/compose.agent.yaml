@@ -41,6 +41,7 @@ services:
       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:?Configure MINIO_SECRET_KEY}
       MINIO_BUCKET: ${MINIO_BUCKET:-dentalrisk-profiles}
       CLINICAL_CONNECTOR_ENABLED: "true"
+      CLINIC_TIMEZONE: ${CLINIC_TIMEZONE:-America/Tijuana}
     command: ["python", "scripts/provision_storage.py"]
     restart: on-failure:5
     depends_on:

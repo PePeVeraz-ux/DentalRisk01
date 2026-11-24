@@ -47,23 +47,64 @@ export const publicUser = (u: any) => ({
   dentist_id: u.dentist_id,
 });
 
-export async function bind(db: Database, actor: string, input: any) {
+async function markOperatedDay(tx: Sql, shiftId: string, when: Date) {
+  const day = DateTime.fromJSDate(when).setZone(zone()).toISODate()!;
+  await tx.query(
+    `INSERT INTO calendar_days(id,shift_id,day,operated,breaks) VALUES($1,$2,$3,true,$4)
+     ON CONFLICT(shift_id,day) DO UPDATE SET operated=true`,
+    [id(), shiftId, day, JSON.stringify([])],
+  );
+}
+
+async function resolveOperationalShift(tx: Sql, when: Date, requestedId?: string) {
+  if (requestedId) {
+    const requested = await one(tx, 'shifts', requestedId);
+    requireThat(requested.active, 'Turno inactivo');
+    await markOperatedDay(tx, requested.id, when);
+    return requested.id as string;
+  }
+  const local = DateTime.fromJSDate(when).setZone(zone());
+  const weekday = local.weekday % 7;
+  const localTime = local.toFormat('HH:mm:ss');
+  let shift = (
+    await tx.query(
+      `SELECT * FROM shifts
+       WHERE active=true AND weekday=$1 AND start_time<=$2::time AND end_time>$2::time
+       ORDER BY start_time,id LIMIT 1`,
+      [weekday, localTime],
+    )
+  ).rows[0];
+  if (!shift) {
+    const names = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+    shift = (
+      await tx.query(
+        `INSERT INTO shifts(id,name,weekday,start_time,end_time)
+         VALUES($1,$2,$3,'00:00','23:59:59') RETURNING *`,
+        [id(), `Horario automático - ${names[weekday]}`, weekday],
+      )
+    ).rows[0];
+  }
+  await markOperatedDay(tx, shift.id, when);
+  return shift.id as string;
+}
+
+export async function bind(db: Database, actor: string, input: any, clock: Clock = () => new Date()) {
   return db.transaction(async (tx) => {
     const card = await one(tx, 'cards', input.card_id);
     requireThat(card.status === 'AVAILABLE', 'La tarjeta no está disponible');
     const service = await one(tx, 'services', input.service_id);
-    for (const table of ['patients', 'dentists', 'stations', 'shifts']) {
+    for (const table of ['patients', 'dentists', 'stations']) {
       const key = (
         {
           patients: 'patient_id',
           dentists: 'dentist_id',
           stations: 'station_id',
-          shifts: 'shift_id',
         } as Record<string, string>
       )[table];
       requireThat((await one(tx, table, input[key])).active, 'Registro inactivo');
     }
     requireThat(service.active, 'Servicio inactivo');
+    const shiftId = await resolveOperationalShift(tx, clock(), input.shift_id);
     if (input.appointment_id) {
       const ap = await one(tx, 'appointments', input.appointment_id);
       requireThat(
@@ -84,7 +125,7 @@ export async function bind(db: Database, actor: string, input: any) {
         input.dentist_id,
         input.service_id,
         input.station_id,
-        input.shift_id,
+        shiftId,
         input.appointment_id ?? null,
         input.card_id,
         service.price_cents,
@@ -96,7 +137,10 @@ export async function bind(db: Database, actor: string, input: any) {
       card.id,
     ]);
     await tx.query("UPDATE cards SET status='ASSIGNED' WHERE id=$1", [card.id]);
-    await audit(tx, actor, 'attention.bind', attentionId);
+    await audit(tx, actor, 'attention.bind', attentionId, {
+      shift_id: shiftId,
+      shift_assignment: input.shift_id ? 'provided' : 'automatic',
+    });
     return one(tx, 'attentions', attentionId);
   });
 }
@@ -149,23 +193,7 @@ export async function scan(
       if (elapsed < Number(process.env.RFID_DEBOUNCE_MS ?? 2000))
         result = { accepted: false, code: 'DEBOUNCED', message: 'Relectura ignorada' };
       else if (a.status === 'PENDING') {
-        const local = DateTime.fromJSDate(now).setZone(zone());
-        const shift = await one(tx, 'shifts', a.shift_id);
-        const day = local.toISODate();
-        const calendar = (
-          await tx.query('SELECT * FROM calendar_days WHERE shift_id=$1 AND day=$2', [a.shift_id, day])
-        ).rows[0];
-        const start = DateTime.fromISO(`${day}T${shift.start_time}`, { zone: zone() });
-        const end = DateTime.fromISO(`${day}T${shift.end_time}`, { zone: zone() });
-        const inBreak = calendar?.breaks?.some(
-          (b: any) =>
-            local >= DateTime.fromISO(`${day}T${b.start}`, { zone: zone() }) &&
-            local < DateTime.fromISO(`${day}T${b.end}`, { zone: zone() }),
-        );
-        requireThat(
-          calendar?.operated && local >= start && local < end && !inBreak,
-          'Configure un turno operado vigente antes de iniciar',
-        );
+        await markOperatedDay(tx, a.shift_id, now);
         const busy = (
           await tx.query(
             "SELECT id FROM attentions WHERE status='IN_PROGRESS' AND (station_id=$1 OR dentist_id=$2)",

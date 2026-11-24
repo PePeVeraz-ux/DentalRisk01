@@ -1,0 +1,121 @@
+{
+  "at": "2026-11-24T05:09:44.534290+00:00",
+  "database": "dentalrisk",
+  "dataset": "presentacion",
+  "counts": {
+    "users": 16,
+    "dentists": 9,
+    "services": 15,
+    "stations": 4,
+    "patients": 501,
+    "cards": 50,
+    "shifts": 5,
+    "calendar_days": 101,
+    "appointments": 502,
+    "attentions": 502,
+    "assignments": 502,
+    "rfid_events": 957,
+    "incidents": 5,
+    "weekly_reports": 21
+  },
+  "presentation_counts": {
+    "patients": 500,
+    "appointments": 500,
+    "attentions": 500,
+    "assignments": 500,
+    "rfid_events": 956,
+    "cards": 50
+  },
+  "attention_statuses": {
+    "IN_PROGRESS": 1,
+    "COMPLETED": 475,
+    "PENDING": 19,
+    "INCIDENT": 5
+  },
+  "appointment_statuses": {
+    "CANCELLED": 5,
+    "SCHEDULED": 20,
+    "ATTENDED": 475
+  },
+  "card_statuses": {
+    "ASSIGNED": 22,
+    "AVAILABLE": 23,
+    "BLOCKED": 5
+  },
+  "open_card_assignments": 22,
+  "rfid_events_by_code": {
+    "CHECK_OUT": 475,
+    "CHECK_IN": 481
+  },
+  "visible_qa_remaining": {
+    "patients": 0,
+    "dentists": 0,
+    "services": 0,
+    "stations": 0,
+    "cards": 0,
+    "shifts": 0,
+    "users": 0
+  },
+  "completed_without_matching_check_in_out": 0,
+  "calendar_weekday_mismatches": 0,
+  "event_card_uid_mismatches": 0,
+  "attention_price_mismatches": 0,
+  "weekly_reports_with_qa_text": 0,
+  "weekly_reports_with_presentation_data": 20,
+  "weekly_reports_with_activity": 20,
+  "samples": {
+    "patients": [
+      {
+        "name": "María Fernanda García López",
+        "reference": "PAC-2026-0001"
+      },
+      {
+        "name": "María Fernanda Hernández Ruiz",
+        "reference": "PAC-2026-0002"
+      },
+      {
+        "name": "María Fernanda Martínez Torres",
+        "reference": "PAC-2026-0003"
+      },
+      {
+        "name": "María Fernanda González Castro",
+        "reference": "PAC-2026-0004"
+      },
+      {
+        "name": "María Fernanda Rodríguez Mendoza",
+        "reference": "PAC-2026-0005"
+      }
+    ],
+    "dentists": [
+      {
+        "name": "Dr. Alejandro Ruiz",
+        "specialty": "Endodoncia"
+      },
+      {
+        "name": "Dr. Daniel Castro",
+        "specialty": "Periodoncia"
+      },
+      {
+        "name": "Dr. Roberto Salazar",
+        "specialty": "Cirugía oral"
+      },
+      {
+        "name": "Dra. Camila Torres",
+        "specialty": "Rehabilitación oral"
+      },
+      {
+        "name": "Dra. Mariana López",
+        "specialty": "Odontología general"
+      },
+      {
+        "name": "Dra. Sofía Hernández",
+        "specialty": "Ortodoncia"
+      },
+      {
+        "name": "Dra. Valeria Mendoza",
+        "specialty": "Odontopediatría"
+      }
+    ]
+  },
+  "status": "passed"
+}

@@ -37,7 +37,7 @@ test('migración desde la demo conserva usuarios y sesiones sin otorgar acceso o
     const session = (await db.query('SELECT * FROM sessions')).rows[0];
     assert.equal(session.csrf, csrf);
     assert.equal(session.operation_until, null);
-    assert.equal((await db.query('SELECT version FROM schema_migrations')).rows.length, 3);
+    assert.equal((await db.query('SELECT version FROM schema_migrations')).rows.length, 4);
   } finally {
     await db.close();
   }

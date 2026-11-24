@@ -39,6 +39,80 @@
   ],
   "item": [
     {
+      "name": "GET /api/v1/assistant/status",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/assistant/status"
+      }
+    },
+    {
+      "name": "POST /api/v1/assistant/chat",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/assistant/chat",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"messages\": []\n}"
+        }
+      }
+    },
+    {
+      "name": "POST /api/v1/assistant/patients/confirm",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "{{baseUrl}}"
+          },
+          {
+            "key": "x-csrf-token",
+            "value": "{{csrf}}"
+          }
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "url": "{{baseUrl}}/api/v1/assistant/patients/confirm",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"proposal_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"approved\": true\n}"
+        }
+      }
+    },
+    {
       "name": "GET /api/v1/health",
       "request": {
         "method": "GET",
@@ -699,7 +773,7 @@
         "url": "{{baseUrl}}/api/v1/patients",
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"name\": \"REEMPLAZAR\",\n  \"reference\": \"REEMPLAZAR\"\n}"
+          "raw": "{\n  \"name\": \"REEMPLAZAR\"\n}"
         }
       }
     },
@@ -1113,7 +1187,7 @@
         "url": "{{baseUrl}}/api/v1/attentions",
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"patient_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"service_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"dentist_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"station_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"shift_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"card_id\": \"00000000-0000-4000-8000-000000000001\"\n}"
+          "raw": "{\n  \"patient_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"service_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"dentist_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"station_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"card_id\": \"00000000-0000-4000-8000-000000000001\"\n}"
         }
       }
     },

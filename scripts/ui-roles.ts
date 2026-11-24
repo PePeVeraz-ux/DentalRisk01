@@ -260,29 +260,28 @@ try {
   checks.push('dueño: panel ejecutivo, ruta persistente y operación oculta');
   console.log('Panel ejecutivo y navegación del dueño verificados.');
   await navigate(owner, 'Usuarios y seguridad');
-  const create = owner.locator('form').filter({ hasText: 'Crear cuenta individual' });
-  for (const [role, email] of [
-    ['RECEPTION', 'reception@example.test'],
-    ['DENTIST', 'dentist@example.test'],
-    ['SUPPORT', 'support@example.test'],
+  const create = owner.locator('form').filter({ hasText: 'Crear cuenta' });
+  for (const [role, email, name] of [
+    ['RECEPTION', 'reception@example.test', 'QA Recepción'],
+    ['DENTIST', 'dentist@example.test', 'QA Dentista A'],
+    ['SUPPORT', 'support@example.test', 'QA Soporte'],
   ]) {
-    await create.getByLabel('Nombre', { exact: true }).fill('QA ' + role);
+    await create.getByLabel('Nombre', { exact: true }).fill(name);
     await create.getByLabel('Correo', { exact: true }).fill(email);
-    await create.getByLabel('Contraseña (mín. 12 caracteres)', { exact: true }).fill(password);
+    await create.getByLabel('Contraseña temporal (mín. 12 caracteres)', { exact: true }).fill(password);
     await create.getByLabel('Rol', { exact: true }).selectOption(role);
-    if (role === 'DENTIST')
-      await create.getByLabel('Dentista (para rol Dentista)', { exact: true }).selectOption(uid.dentist);
     await create.getByRole('button', { name: 'Guardar' }).click();
     await owner.getByRole('row').filter({ hasText: email }).waitFor();
   }
   checks.push('alta de cuentas por rol desde la interfaz');
   const reception = await login('reception@example.test');
-  await reception.getByRole('heading', { name: 'Recepción', exact: true }).waitFor();
+  await reception.getByRole('heading', { name: 'Jornada de recepción', exact: true }).waitFor();
   assert.equal(
     await reception.locator('nav').getByRole('button', { name: 'Panel ejecutivo', exact: true }).count(),
     0,
   );
-  const patientForm = reception.locator('form').filter({ hasText: 'Datos mínimos de identificación' });
+  await reception.getByRole('button', { name: 'Registrar paciente', exact: true }).click();
+  const patientForm = reception.locator('form').filter({ hasText: 'Registrar paciente' });
   await patientForm.getByLabel('Nombre', { exact: true }).fill('QA Paciente propio');
   await delay(4500);
   assert.equal(await patientForm.getByLabel('Nombre', { exact: true }).inputValue(), 'QA Paciente propio');
@@ -383,7 +382,7 @@ try {
   await navigate(reception, 'Recepción');
   await screenshot(reception, 'jornada');
   await reception.goto(base + '/seguridad');
-  await reception.getByRole('heading', { name: 'Recepción', exact: true }).waitFor();
+  await reception.getByRole('heading', { name: 'Jornada de recepción', exact: true }).waitFor();
   assert.equal((await reception.request.get(base + '/api/v1/users')).status(), 403);
   checks.push(
     'recepción: paciente, cita, horario clínico, vinculación, entrada/salida y liberación',

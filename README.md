@@ -27,20 +27,20 @@ Abrir **http://localhost:3000** o **http://127.0.0.1:3000**. En desarrollo se pe
 
 ## Espacios por rol
 
-| Perfil | Inicio y responsabilidad |
-| --- | --- |
+| Perfil                 | Inicio y responsabilidad                                              |
+| ---------------------- | --------------------------------------------------------------------- |
 | Dueño / Administración | Panel ejecutivo, equipo, indicadores y reportes; catálogos y cuentas. |
-| Recepción | Jornada, pacientes, agenda, asignación de tarjetas e incidencias. |
-| Dentista | Su productividad, agenda y atenciones autorizadas. |
-| Soporte | Diagnóstico y auditoría reducida, sin pacientes. |
+| Recepción              | Jornada, pacientes, agenda, asignación de tarjetas e incidencias.     |
+| Dentista               | Su productividad, agenda y atenciones autorizadas.                    |
+| Soporte                | Diagnóstico y auditoría reducida, sin pacientes.                      |
 
 Los módulos tienen direcciones propias y conservan el acceso al recargar. El dueño no asigna citas ni pacientes con sus permisos habituales. Si necesita cubrir recepción, en Mi cuenta puede autorizar hasta 30 minutos de acceso con contraseña y motivo. El permiso es revocable, queda auditado y no se transfiere a otras sesiones.
 
 ## Recorrido
 
-1. Como dueño, configurar especialistas, servicios, estaciones, tarjetas, turnos y días operados. En Usuarios y seguridad crear cuentas individuales de recepción y dentistas, vinculando cada dentista a su registro.
+1. Como dueño, configurar servicios, consultorios, tarjetas, turnos y días operados. En Usuarios y seguridad crear las cuentas individuales. Al elegir el rol Dentista, DentalRisk crea o vincula automáticamente su perfil profesional.
 2. Iniciar con una cuenta de Recepción para registrar paciente y cita si corresponde.
-3. Vincular paciente, servicio, dentista, estación, turno y tarjeta disponible.
+3. Vincular paciente, servicio, dentista, estación y tarjeta disponible. DentalRisk asigna el horario automáticamente.
 4. En Atenciones, usar el simulador: primer escaneo inicia; segundo escaneo después de la ventana de dos segundos finaliza.
 5. Liberar la tarjeta tras su devolución física.
 6. Como dueño, consultar Panel ejecutivo, Equipo y desempeño o Reportes y exportar CSV, PDF o Excel. Los periodos rápidos incluyen Semana anterior para la medición semanal.
@@ -85,8 +85,10 @@ Las evidencias JSON registran la fecha, versión y alcance de cada ensayo. Las p
 
 Manuales listos para consulta: [usuario](output/pdf/manual-usuario.pdf), [técnico](output/pdf/manual-tecnico.pdf) y [guía de incidencias](output/pdf/guia-incidencias.pdf). La documentación de los nueve módulos se encuentra en `docs/modulos/`.
 
-La aplicación clínica no incorpora inferencia IA, voz ni ESP32-S3 en esta entrega. No se garantiza el aumento de productividad por instalar el sistema: debe medirse sobre periodos comparables.
+DentalRisk incluye el módulo Asistente Denti dentro del espacio ADMIN. La conversación web usa la sesión del dueño, herramientas limitadas y confirmación antes de registrar pacientes. El modelo se configura en el servidor con AGENT_CHAT_BASE_URL, AGENT_CHAT_MODEL y AGENT_CHAT_API_KEY; sin proveedor configurado la pantalla informa que el servicio no está listo. El ESP32-S3 continúa como interfaz opcional e independiente. La productividad debe medirse sobre periodos comparables; el valor de servicios no equivale a utilidad.
 
 ## Servicio del agente
 
-La carpeta `Agente IA/` contiene el servicio FastAPI del asistente ESP: Argon2id, JWT revocables y perfiles privados en MinIO. En esta instalación local ambos servicios comparten PostgreSQL `dentalrisk` y la tabla `users`; las tablas `agent_*` conservan sesiones, operaciones y auditoría del agente. Las rutas clínicas del agente consultan registros autorizados sin identidad de pacientes. El ESP puede crear cuentas no administrativas y asignarles fotos mediante la API delegada. La inferencia ocurre en el ESP; esta API no realiza diagnósticos ni inferencia clínica. La demostración Compose independiente sigue disponible para pruebas aisladas y no representa el despliegue compartido.
+La carpeta `Agente IA/` conserva las rutas protegidas que usa el ESP32-S3 para registrar pacientes y asociar fotos privadas en MinIO. El asistente web de DentalRisk está implementado en la API principal y usa herramientas propias para consultar rendimiento agregado y registrar pacientes con confirmación. El chat web aún requiere configurar el proveedor de IA; la carga de fotos desde el navegador no está habilitada. El rendimiento no expone identidades de pacientes, y el servidor no ejecuta SQL generado por el modelo.
+
+La arquitectura y configuración están en [Asistente Denti dentro de DentalRisk](docs/arquitectura/004-asistente-denti-web.md).

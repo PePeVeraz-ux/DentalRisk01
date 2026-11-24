@@ -3,7 +3,7 @@ export const workspaceRoles = {
   ADMIN: {
     title: 'Dirección de la clínica',
     home: 'dashboard',
-    intro: 'Indicadores para decidir, comparar y acompañar a tu equipo.',
+    intro: 'Pacientes, atenciones y valor de servicios por dentista.',
   },
   RECEPTION: {
     title: 'Recepción',
@@ -31,6 +31,7 @@ export const modules: {
 }[] = [
   { id: 'dashboard', path: '/direccion', label: 'Panel ejecutivo', icon: '◫', roles: ['ADMIN', 'DENTIST'] },
   { id: 'team', path: '/equipo', label: 'Equipo y desempeño', icon: '◉', roles: ['ADMIN'] },
+  { id: 'assistant', path: '/asistente', label: 'Asistente Denti', icon: '✦', roles: ['ADMIN'] },
   {
     id: 'reception',
     path: '/recepcion',

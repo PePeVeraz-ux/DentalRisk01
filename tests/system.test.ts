@@ -335,6 +335,20 @@ test('DentalRisk: integración transaccional, seguridad y reportes', async (t) =
       assert.equal(contract.statusCode, 200);
       assert.ok(contract.json().paths['/api/v1/attentions']);
     });
+    await t.test('la cuenta de dentista crea y vincula su perfil sin pedir identificadores', async () => {
+      const created = await request('POST', '/users', {
+        name: 'Dra. Perfil Automático',
+        email: 'perfil-automatico@example.test',
+        password,
+        role: 'DENTIST',
+      });
+      assert.equal(created.statusCode, 200, created.body);
+      assert.match(created.json().dentist_id, /^[0-9a-f-]{36}$/);
+      const professional = (
+        await db.query('SELECT name FROM dentists WHERE id=$1', [created.json().dentist_id])
+      ).rows[0];
+      assert.equal(professional.name, 'Dra. Perfil Automático');
+    });
     await t.test('vinculación concurrente asigna una sola tarjeta', async () => {
       const results = await Promise.all([
         request('POST', '/attentions', base),

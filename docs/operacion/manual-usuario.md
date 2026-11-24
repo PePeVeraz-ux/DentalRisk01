@@ -10,9 +10,9 @@ En Mi cuenta puedes cambiar tu contraseña proporcionando la actual. Después de
 
 ## Preparación de operación
 
-Administración debe registrar servicios y precios, especialistas, estaciones y turnos. En Calendario, indicar cada fecha operada, el turno y descansos. Los turnos no operados o días sin configurar no permiten iniciar atención. Registrar el inventario de tarjetas con sus UID y comprobarlos físicamente.
+Administración debe registrar servicios y precios, especialistas y estaciones. Los horarios y el calendario sirven para reportes; al vincular una tarjeta, DentalRisk selecciona el horario vigente y marca automáticamente el día como operado. Registrar el inventario de tarjetas con sus UID y comprobarlos físicamente.
 
-En Usuarios y seguridad, crear cuentas individuales con contraseñas de al menos 12 caracteres. Las cuentas de dentista deben vincularse al especialista correspondiente. Entregar cada credencial por un canal privado y solicitar cambio desde Mi cuenta. Desactivar una cuenta revoca sus sesiones. No compartir la cuenta del dueño con recepción.
+En Usuarios y seguridad, crear cuentas individuales con contraseñas de al menos 12 caracteres. Al elegir el rol Dentista, el sistema crea o vincula automáticamente el perfil profesional y genera su identificador en la base. Entregar cada credencial por un canal privado y solicitar cambio desde Mi cuenta. Desactivar una cuenta revoca sus sesiones. No compartir la cuenta del dueño con recepción.
 
 El panel del dueño muestra la preparación de catálogos y cuentas pendiente. Ese listado no sustituye la verificación física de tarjetas ni la aprobación clínica.
 
@@ -20,7 +20,7 @@ El panel del dueño muestra la preparación de catálogos y cuentas pendiente. E
 
 1. Buscar o registrar al paciente con su folio. Confirmar que no se está duplicando otro registro.
 2. Si se usa agenda, crear la cita con servicio, dentista e inicio/fin. Los horarios superpuestos del mismo dentista se rechazan.
-3. Vincular la cita o una atención nueva seleccionando paciente, servicio, dentista, estación, turno y tarjeta Disponible. Revisar los datos y guardar.
+3. Vincular la cita o una atención nueva seleccionando paciente, servicio, dentista, estación y tarjeta Disponible. DentalRisk asigna internamente el horario; recepción no necesita elegirlo. Revisar los datos y guardar.
 4. Entregar la tarjeta. Al entrar al consultorio, el paciente la acerca al lector y debe recibir confirmación de entrada.
 5. Al salir, el paciente vuelve a presentarla y se confirma atención Completada. Una relectura inmediata no registra salida.
 6. Recibir la tarjeta en recepción y seleccionar Liberar. No liberar una tarjeta que no haya sido devuelta.
@@ -37,7 +37,7 @@ Ante pérdida o daño, seguir la guía de incidencias. La corrección posterior 
 
 ## Reportes
 
-Elegir periodo y filtros. Panel ejecutivo muestra pacientes distintos, atenciones completadas, promedio de minutos, valor de servicios y tiempos entre consultas. Incluye evolución diaria y comparación con el periodo anterior de igual número de días. Equipo y desempeño detalla la actividad por dentista, incluidos los que no tuvieron atenciones. Ver detalle abre sus servicios filtrados. Los tiempos muertos excluyen descansos y periodos no operados.
+Elegir periodo y filtros. Panel ejecutivo muestra pacientes, atenciones completadas, promedio de minutos, valor de servicios y tiempos entre consultas. Incluye evolución diaria y comparación con el periodo anterior de igual número de días. Equipo y desempeño detalla la actividad por dentista, incluidos los que no tuvieron atenciones. Ver detalle abre sus servicios filtrados. Los tiempos muertos excluyen descansos y periodos no operados.
 
 CSV, PDF y Excel descargan el mismo periodo y filtros. Revisar la fecha de actualización y el total. El valor de servicios no acredita pagos recibidos. Cancelaciones e incidencias no se suman como servicios completados.
 

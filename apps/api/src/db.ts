@@ -58,6 +58,7 @@ export async function migrate(db: Database) {
     [1, '001_initial.sql'],
     [2, '002_owner_workspace.sql'],
     [3, '003_analytics_indexes.sql'],
+    [4, '004_account_defaults.sql'],
   ] as const) {
     if ((await db.query('SELECT version FROM schema_migrations WHERE version=$1', [version])).rows.length)
       continue;

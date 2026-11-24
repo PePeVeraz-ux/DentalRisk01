@@ -19,6 +19,128 @@
     "schemas": {}
   },
   "paths": {
+    "/api/v1/assistant/status": {
+      "get": {
+        "tags": [
+          "assistant"
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/assistant/chat": {
+      "post": {
+        "tags": [
+          "assistant"
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "messages": {
+                    "minItems": 1,
+                    "maxItems": 12,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": {
+                          "type": "string",
+                          "enum": [
+                            "user",
+                            "assistant"
+                          ]
+                        },
+                        "content": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 4000
+                        }
+                      },
+                      "required": [
+                        "role",
+                        "content"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "required": [
+                  "messages"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/v1/assistant/patients/confirm": {
+      "post": {
+        "tags": [
+          "assistant"
+        ],
+        "description": "Roles permitidos: ADMIN. Las mutaciones requieren Origin autorizado y x-csrf-token de la sesión.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "proposal_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "approved": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "proposal_id",
+                  "approved"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
     "/api/v1/health": {
       "get": {
         "responses": {
@@ -960,6 +1082,7 @@
                     "maxLength": 150
                   },
                   "reference": {
+                    "description": "Opcional; DentalRisk asigna un folio si se omite.",
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 150
@@ -1061,6 +1184,7 @@
                     "maxLength": 150
                   },
                   "reference": {
+                    "description": "Opcional; DentalRisk asigna un folio si se omite.",
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 150
@@ -1070,8 +1194,7 @@
                   }
                 },
                 "required": [
-                  "name",
-                  "reference"
+                  "name"
                 ],
                 "additionalProperties": false
               }
@@ -1962,7 +2085,6 @@
                   "service_id",
                   "dentist_id",
                   "station_id",
-                  "shift_id",
                   "card_id"
                 ],
                 "additionalProperties": false

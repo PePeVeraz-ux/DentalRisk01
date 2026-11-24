@@ -3,6 +3,7 @@ import { createContext, useContext, useCallback, useEffect, useState, useRef, ty
 import { usePathname } from 'next/navigation';
 import { DateTime } from 'luxon';
 import { ExecutiveDashboard } from './executive-dashboard';
+import { AssistantChat } from './assistant-chat';
 import { modules, workspaceRoles, type Role } from '../lib/workspaces';
 
 type Item = Record<string, any>;
@@ -13,6 +14,7 @@ type Field = {
   options?: string;
   required?: boolean;
   values?: [string, string][];
+  autoComplete?: string;
 };
 const labels: Record<string, string> = {
   ADMIN: 'Dueño / Administración',
@@ -38,6 +40,47 @@ const localInput = (s: string, timezone = 'America/Tijuana') =>
   DateTime.fromISO(s).setZone(timezone).toFormat("yyyy-MM-dd'T'HH:mm");
 const today = () => new Date().toLocaleDateString('en-CA');
 const names = (row: Item) => row.name ?? row.uid ?? row.reference ?? row.id;
+function AppSkeleton() {
+  return (
+    <main className="app-skeleton" aria-label="Cargando DentalRisk" aria-busy="true">
+      <aside className="skeleton-sidebar" aria-hidden="true">
+        <div className="skeleton-brand-row">
+          <img src="/brand/dentalrisk-mark.png" alt="" />
+          <span className="skeleton skeleton-brand-line" />
+        </div>
+        <span className="skeleton skeleton-workspace-line" />
+        <div className="skeleton-nav-list">
+          {Array.from({ length: 7 }, (_, index) => (
+            <div className="skeleton-nav-row" key={index}>
+              <span className="skeleton skeleton-nav-icon" />
+              <span className="skeleton skeleton-nav-label" />
+            </div>
+          ))}
+        </div>
+      </aside>
+      <section className="skeleton-main" aria-hidden="true">
+        <div className="skeleton-topbar">
+          <span className="skeleton skeleton-breadcrumb-line" />
+          <span className="skeleton skeleton-date-line" />
+        </div>
+        <div className="skeleton-content">
+          <span className="skeleton skeleton-eyebrow-line" />
+          <span className="skeleton skeleton-title-line" />
+          <span className="skeleton skeleton-copy-line" />
+          <div className="skeleton-card-grid">
+            {Array.from({ length: 4 }, (_, index) => (
+              <div className="skeleton-card" key={index}>
+                <span className="skeleton skeleton-card-label" />
+                <span className="skeleton skeleton-card-value" />
+              </div>
+            ))}
+          </div>
+          <div className="skeleton skeleton-panel-block" />
+        </div>
+      </section>
+    </main>
+  );
+}
 function SimulatorSelect({
   label,
   name,
@@ -69,7 +112,13 @@ function SimulatorSelect({
       </label>
       <label>
         {label}
-        <select aria-label={label} name={name} required value={selected} onChange={(event) => setSelected(event.target.value)}>
+        <select
+          aria-label={label}
+          name={name}
+          required
+          value={selected}
+          onChange={(event) => setSelected(event.target.value)}
+        >
           <option value="">Seleccionar…</option>
           {matches.map((item) => (
             <option key={item.id} value={valueOf(item)}>
@@ -86,7 +135,16 @@ const catalogConfig: Record<string, { title: string; fields: Field[]; columns: [
     title: 'Pacientes',
     fields: [
       { key: 'name', label: 'Nombre' },
-      { key: 'reference', label: 'Folio de paciente' },
+      { key: 'reference', label: 'Folio de paciente', required: false },
+      {
+        key: 'active',
+        label: 'Estado',
+        type: 'boolean',
+        values: [
+          ['true', 'Activo'],
+          ['false', 'Inactivo'],
+        ],
+      },
     ],
     columns: [
       ['name', 'Paciente'],
@@ -181,6 +239,7 @@ function FieldInput({ field, initial }: { field: Field; initial?: any }) {
   const [search, setSearch] = useState('');
   const [found, setFound] = useState<Item[] | null>(null);
   const [selectedRow, setSelectedRow] = useState<Item | null>(null);
+  const [selectedServiceId, setSelectedServiceId] = useState(String(initial ?? ''));
   useEffect(() => {
     let cancelled = false;
     if (field.options === 'patients' && initial) {
@@ -194,6 +253,9 @@ function FieldInput({ field, initial }: { field: Field; initial?: any }) {
       cancelled = true;
     };
   }, [field.options, initial, api]);
+  useEffect(() => {
+    if (field.options === 'services') setSelectedServiceId(String(initial ?? ''));
+  }, [field.options, initial]);
   useEffect(() => {
     let cancelled = false;
     if (field.options !== 'patients' || search.trim().length < 2) {
@@ -222,6 +284,8 @@ function FieldInput({ field, initial }: { field: Field; initial?: any }) {
   if (field.key === 'card_id' || field.key === 'replacement_card_id')
     items = items.filter((c) => c.status === 'AVAILABLE');
   else items = items.filter((c) => c.active !== false);
+  const selectedService =
+    field.options === 'services' ? items.find((row) => String(row.id) === selectedServiceId) : null;
   return (
     <label>
       {field.label}
@@ -234,7 +298,15 @@ function FieldInput({ field, initial }: { field: Field; initial?: any }) {
         />
       )}
       {field.options || field.values ? (
-        <select aria-label={field.label} name={field.key} required={required} defaultValue={initial ?? ''}>
+        <select
+          aria-label={field.label}
+          name={field.key}
+          required={required}
+          {...(field.options === 'services'
+            ? { value: selectedServiceId }
+            : { defaultValue: initial ?? (field.type === 'boolean' ? 'true' : '') })}
+          onChange={field.options === 'services' ? (e) => setSelectedServiceId(e.target.value) : undefined}
+        >
           <option value="">Seleccionar…</option>
           {field.values
             ? field.values.map(([v, l]) => (
@@ -253,12 +325,18 @@ function FieldInput({ field, initial }: { field: Field; initial?: any }) {
           aria-label={field.label}
           name={field.key}
           required={required}
+          autoComplete={field.autoComplete}
           type={field.type === 'money' ? 'number' : (field.type ?? 'text')}
           step={field.type === 'money' ? '0.01' : undefined}
           min={field.type === 'money' ? 0 : undefined}
           maxLength={field.type === 'password' ? 128 : 150}
           defaultValue={field.type === 'money' ? Number(initial ?? 0) / 100 : (initial ?? '')}
         />
+      )}
+      {selectedService && (
+        <small className="muted">
+          Valor del servicio: {money(selectedService.price_cents)}. Se registra con la atención.
+        </small>
       )}
     </label>
   );
@@ -271,6 +349,7 @@ function Form({
   method,
   extra,
   submitLabel = 'Guardar',
+  description,
 }: {
   fields: Field[];
   path: string;
@@ -279,11 +358,18 @@ function Form({
   method?: string;
   extra?: Item;
   submitLabel?: string;
+  description?: string;
 }) {
   const { formHandler, pending, editing, setEditing } = useContext(UiContext)!;
   return (
-    <form className="form-grid" onSubmit={formHandler(path, fields, extra, method)} key={path}>
+    <form
+      className="form-grid"
+      onSubmit={formHandler(path, fields, extra, method)}
+      key={path}
+      autoComplete="off"
+    >
       <div className="form-title">{title}</div>
+      {description && <p className="form-description">{description}</p>}
       {fields.map((f) => (
         <FieldInput key={f.key} field={f} initial={initial?.[f.key]} />
       ))}
@@ -310,7 +396,7 @@ function Table({
   const { timezone } = useContext(UiContext)!;
   return (
     <div className="table-wrap">
-      <table>
+      <table className={actions ? 'has-actions' : undefined}>
         <thead>
           <tr>
             {columns.map(([key, label]) => (
@@ -340,6 +426,8 @@ function Table({
                       ) : (
                         '—'
                       )
+                    ) : key === 'appointment_time' ? (
+                      DateTime.fromISO(String(row.starts_at)).setZone(timezone).toFormat('HH:mm')
                     ) : key.endsWith('_at') ? (
                       stamp(row[key], timezone)
                     ) : key === 'role' ? (
@@ -383,9 +471,13 @@ export default function Home() {
   const [session, setSession] = useState<Item | null>(null),
     [ready, setReady] = useState(false);
   const page = modules.find((m) => m.path === pathname)?.id ?? 'dashboard';
+  const [receptionView, setReceptionView] = useState<'home' | 'patients' | 'bind'>('home');
   const setPage = useCallback((id: string) => {
     const target = modules.find((m) => m.id === id);
-    if (target) window.history.pushState(null, '', target.path);
+    if (target) {
+      window.history.pushState(null, '', target.path);
+      window.requestAnimationFrame(() => window.scrollTo({ top: 0, left: 0, behavior: 'auto' }));
+    }
   }, []);
   const [error, setError] = useState(''),
     [notice, setNotice] = useState(''),
@@ -407,15 +499,39 @@ export default function Home() {
   const refreshSequence = useRef(0),
     busy = useRef(false);
   const [patientQuery, setPatientQuery] = useState('');
+  const [patientSearchText, setPatientSearchText] = useState('');
   const [clinicalDay, setClinicalDay] = useState(''),
     [clinicalStatus, setClinicalStatus] = useState('');
   const [overview, setOverview] = useState<Item | null>(null),
     [setup, setSetup] = useState<Item | null>(null);
   const [operationActive, setOperationActive] = useState(false);
   const [scanResult, setScanResult] = useState<Item | null>(null);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const user = session?.user;
   const canOperate = user?.role === 'RECEPTION' || (user?.role === 'ADMIN' && operationActive);
   const roleInfo = workspaceRoles[(user?.role ?? 'ADMIN') as Role];
+  useEffect(() => {
+    if (page !== 'reception') setReceptionView('home');
+    window.requestAnimationFrame(() => window.scrollTo({ top: 0, left: 0, behavior: 'auto' }));
+  }, [page]);
+  useEffect(() => {
+    try {
+      setSidebarCollapsed(window.localStorage.getItem('dentalrisk.sidebar-collapsed') === 'true');
+    } catch {
+      setSidebarCollapsed(false);
+    }
+  }, []);
+  const toggleSidebar = () => {
+    setSidebarCollapsed((current) => {
+      const next = !current;
+      try {
+        window.localStorage.setItem('dentalrisk.sidebar-collapsed', String(next));
+      } catch {
+        // El menú sigue funcionando aunque el navegador bloquee el almacenamiento local.
+      }
+      return next;
+    });
+  };
   const api = useCallback(
     async (path: string, body?: any, method?: string) => {
       const response = await fetch('/api/v1' + path, {
@@ -460,7 +576,15 @@ export default function Home() {
       let endpoints: string[] = [];
       if (analytical && ['ADMIN', 'DENTIST'].includes(user.role))
         endpoints = ['dentists', 'services', 'stations', 'shifts'];
-      if (['reception', 'appointments', 'attentions'].includes(page) && user.role !== 'SUPPORT') {
+      if (page === 'reception' && user.role !== 'SUPPORT') {
+        endpoints =
+          receptionView === 'home'
+            ? ['appointments']
+            : receptionView === 'patients'
+              ? ['patients']
+              : ['dentists', 'services', 'stations', 'patients', 'cards'];
+      }
+      if (['appointments', 'attentions'].includes(page) && user.role !== 'SUPPORT') {
         endpoints = [
           'dentists',
           'services',
@@ -472,32 +596,38 @@ export default function Home() {
       }
       if (page === 'settings' && user.role === 'ADMIN')
         endpoints = ['services', 'dentists', 'stations', 'cards', 'shifts', 'calendar'];
-      if (page === 'security') endpoints = user.role === 'ADMIN' ? ['users', 'audit', 'dentists'] : ['audit'];
+      if (page === 'security') endpoints = user.role === 'ADMIN' ? ['users'] : ['audit'];
       if (light) {
-        const relevant =
-          page === 'reception' || page === 'attentions'
-            ? ['attentions', 'cards', 'incidents']
-            : page === 'appointments'
+        let relevant: string[] = [];
+        if (page === 'reception') {
+          relevant =
+            receptionView === 'home'
               ? ['appointments']
-              : page === 'settings'
-                ? [category]
-                : page === 'security'
-                  ? ['users', 'audit']
-                  : [];
+              : receptionView === 'patients'
+                ? ['patients']
+                : ['patients', 'cards'];
+        } else if (page === 'attentions') relevant = ['attentions', 'cards', 'incidents'];
+        else if (page === 'appointments') relevant = ['appointments'];
+        else if (page === 'settings') relevant = [category];
+        else if (page === 'security') relevant = user.role === 'ADMIN' ? ['users'] : ['audit'];
         endpoints = endpoints.filter((name) => relevant.includes(name));
       }
       const results = await Promise.all(
         endpoints.map(async (endpoint) => {
-          const query = ['attentions', 'appointments'].includes(endpoint)
-            ? `?limit=50&offset=${(endpoint === 'attentions' ? attentionPage : appointmentPage) * 50}&q=${encodeURIComponent(clinicalSearch)}${clinicalDay ? '&day=' + clinicalDay : ''}${clinicalStatus ? '&status=' + clinicalStatus : ''}`
-            : endpoint === 'patients'
-              ? `?limit=500&q=${encodeURIComponent(patientQuery)}`
-              : ['dentists', 'services', 'stations', 'shifts', 'cards'].includes(endpoint)
-                ? '?limit=500'
-                : '';
+          const receptionDay = new Date().toLocaleDateString('en-CA', {
+            timeZone: session?.timezone ?? 'America/Tijuana',
+          });
+          let query = '';
+          if (endpoint === 'appointments' && page === 'reception')
+            query = `?limit=5&offset=0&day=${receptionDay}`;
+          else if (['attentions', 'appointments'].includes(endpoint))
+            query = `?limit=50&offset=${(endpoint === 'attentions' ? attentionPage : appointmentPage) * 50}&q=${encodeURIComponent(clinicalSearch)}${clinicalDay ? '&day=' + clinicalDay : ''}${clinicalStatus ? '&status=' + clinicalStatus : ''}`;
+          else if (endpoint === 'patients') query = `?limit=500&q=${encodeURIComponent(patientQuery)}`;
+          else if (['dentists', 'services', 'stations', 'shifts', 'cards'].includes(endpoint))
+            query = '?limit=500';
           const result = await api('/' + endpoint + query);
           if (query.includes('limit=500') && result.total > result.items.length) {
-            for (let offset = result.items.length; offset < result.total; ) {
+            for (let offset = result.items.length; offset < result.total;) {
               const next = await api('/' + endpoint + query + `&offset=${offset}`);
               if (!next.items.length) break;
               result.items.push(...next.items);
@@ -515,7 +645,7 @@ export default function Home() {
                 new Date().toLocaleDateString('en-CA', { timeZone: session?.timezone ?? 'America/Tijuana' }),
             )
           : null,
-        ['ADMIN', 'SUPPORT'].includes(user.role) && page === 'security' ? api('/diagnostics') : null,
+        user.role === 'SUPPORT' && page === 'security' ? api('/diagnostics') : null,
         user.role === 'ADMIN' && ['dashboard', 'settings'].includes(page) ? api('/setup') : null,
         api('/sessions/me'),
       ]);
@@ -546,6 +676,7 @@ export default function Home() {
       appointmentPage,
       clinicalSearch,
       page,
+      receptionView,
       category,
       patientQuery,
       clinicalDay,
@@ -612,7 +743,10 @@ export default function Home() {
         : '',
     );
   }, [page, session?.timezone]);
-  async function action(fn: () => Promise<any>, message = 'Operación completada') {
+  async function action(
+    fn: () => Promise<any>,
+    message: string | ((result: any) => string) = 'Operación completada',
+  ) {
     if (busy.current) return;
     busy.current = true;
     setPending(true);
@@ -620,7 +754,7 @@ export default function Home() {
     setNotice('');
     try {
       const result = await fn();
-      setNotice(message);
+      setNotice(typeof message === 'function' ? message(result) : message);
       if (result && Object.hasOwn(result, 'operation_until')) {
         setSession((old) => (old ? { ...old, operation_until: result.operation_until } : old));
         setOperationActive(Boolean(result.operation_until));
@@ -652,6 +786,7 @@ export default function Home() {
       const values: Item = { ...Object.fromEntries(new FormData(el)), ...extra };
       fields.forEach((f) => {
         if (f.type === 'money') values[f.key] = Math.round(Number(values[f.key]) * 100);
+        if (f.type === 'boolean') values[f.key] = values[f.key] === 'true';
         if (f.key === 'weekday') values[f.key] = Number(values[f.key]);
         if (f.type === 'datetime-local') {
           const value = DateTime.fromISO(String(values[f.key]), {
@@ -673,7 +808,9 @@ export default function Home() {
         },
         path === '/attentions'
           ? 'Tarjeta vinculada. Entrega la tarjeta e indica que debe presentarse al entrar y al salir.'
-          : 'Operación completada',
+          : path === '/patients'
+            ? (result: Item) => `Paciente registrado. Folio: ${result.reference}`
+            : 'Operación completada',
       );
     };
   }
@@ -691,13 +828,17 @@ export default function Home() {
             ? 'Diagnóstico'
             : n.label,
     }));
-  if (!ready) return <main className="loading">Preparando DentalRisk…</main>;
+  if (!ready) return <AppSkeleton />;
   if (!session)
     return (
       <main className="login">
         <div className="login-story">
-          <div className="brand">
-            <span className="brand-icon">D</span>DentalRisk
+          <div className="brand login-brand">
+            <img
+              className="login-brand-logo"
+              src="/brand/dentalrisk-logo.png"
+              alt="DentalRisk"
+            />
           </div>
           <span className="eyebrow">CONTROL OPERATIVO</span>
           <h1>
@@ -743,12 +884,44 @@ export default function Home() {
   if (!nav.some((n) => n.id === page))
     return <main className="loading">Abriendo tu espacio de trabajo…</main>;
   const title = nav.find((n) => n.id === page)?.label ?? 'DentalRisk';
+  const pageTitle =
+    page === 'reception'
+      ? receptionView === 'home'
+        ? 'Jornada de recepción'
+        : receptionView === 'patients'
+          ? 'Registrar o editar paciente'
+          : 'Vincular tarjeta'
+      : page === 'dashboard'
+        ? user.role === 'ADMIN'
+          ? 'Panel ejecutivo'
+          : 'Mi productividad'
+        : title;
+  const pageDescription =
+    page === 'reception'
+      ? receptionView === 'home'
+        ? 'Citas y acciones de la jornada.'
+        : receptionView === 'patients'
+          ? 'Busca coincidencias antes de dar de alta a una persona.'
+          : 'Asigna paciente, servicio, dentista y tarjeta.'
+      : page === 'dashboard'
+        ? roleInfo.intro
+        : page === 'assistant'
+          ? 'Consulta el rendimiento y prepara altas de pacientes desde DentalRisk.'
+          : user.role === 'ADMIN'
+            ? ({
+                team: 'Compara la actividad registrada por cada dentista.',
+                attentions: 'Consulta tiempos, estados y devolución de tarjetas.',
+                reports: 'Filtra y exporta los resultados operativos de la clínica.',
+                settings: 'Configura servicios, especialistas, consultorios, tarjetas y turnos.',
+                security: 'Crea cuentas y asigna el acceso correspondiente a cada persona.',
+                account: 'Administra la seguridad de tu propia cuenta.',
+              }[page] ?? roleInfo.intro)
+            : roleInfo.intro;
   const bindingFields: Field[] = [
     { key: 'patient_id', label: 'Paciente', options: 'patients' },
     { key: 'service_id', label: 'Servicio', options: 'services' },
     { key: 'dentist_id', label: 'Dentista', options: 'dentists' },
     { key: 'station_id', label: 'Estación', options: 'stations' },
-    { key: 'shift_id', label: 'Turno', options: 'shifts' },
     { key: 'card_id', label: 'Tarjeta disponible', options: 'cards' },
   ];
   const appointmentFields: Field[] = [
@@ -834,21 +1007,42 @@ export default function Home() {
         timezone: session.timezone ?? 'America/Tijuana',
       }}
     >
-      <div className="app-shell">
-        <aside className="sidebar">
-          <div className="brand">
-            <span className="brand-icon">D</span>DentalRisk
+      <div className={sidebarCollapsed ? 'app-shell sidebar-is-collapsed' : 'app-shell'}>
+        <aside className={sidebarCollapsed ? 'sidebar collapsed' : 'sidebar'}>
+          <div className="sidebar-header">
+            <div className="brand">
+              <img
+                className="brand-mark"
+                src="/brand/dentalrisk-mark.png"
+                alt=""
+                aria-hidden="true"
+              />
+              <span className="brand-name">
+                Dental<span className="brand-accent">Risk</span>
+              </span>
+            </div>
+            <button
+              type="button"
+              className="sidebar-toggle"
+              aria-label={sidebarCollapsed ? 'Expandir menú lateral' : 'Retraer menú lateral'}
+              aria-expanded={!sidebarCollapsed}
+              title={sidebarCollapsed ? 'Expandir menú' : 'Retraer menú'}
+              onClick={toggleSidebar}
+            >
+              {sidebarCollapsed ? '›' : '‹'}
+            </button>
           </div>
           <div className="workspace">
             CLÍNICA DENTAL<span>{roleInfo.title}</span>
           </div>
-          <nav>
+          <nav className="sidebar-nav" aria-label="Navegación principal">
             {nav.map((n) => (
               <button
                 key={n.id}
                 aria-label={n.label}
                 aria-current={page === n.id ? 'page' : undefined}
                 className={page === n.id ? 'nav active' : 'nav'}
+                title={sidebarCollapsed ? n.label : undefined}
                 onClick={() => {
                   setPage(n.id);
                   setEditing(null);
@@ -856,18 +1050,19 @@ export default function Home() {
                   setCredential('');
                 }}
               >
-                <span>{n.icon}</span>
-                {n.label}
+                <span className="nav-icon" aria-hidden="true">{n.icon}</span>
+                <span className="nav-label">{n.label}</span>
               </button>
             ))}
           </nav>
           <div className="sidebar-bottom">
             <span className="avatar">{user.name.slice(0, 1)}</span>
-            <div>
+            <div className="sidebar-user">
               <strong>{user.name}</strong>
               <small>{labels[user.role]}</small>
             </div>
             <button
+              className="logout-button"
               aria-label="Cerrar sesión"
               title="Cerrar sesión"
               onClick={() =>
@@ -884,9 +1079,33 @@ export default function Home() {
         </aside>
         <div className="workspace-main">
           <header>
-            <div className="breadcrumb">
-              Clínica <span>/</span> {title}
-            </div>
+            <nav className="breadcrumb" aria-label="Ruta de navegación">
+              <button
+                type="button"
+                onClick={() => {
+                  setPage(roleInfo.home);
+                  setEditing(null);
+                }}
+              >
+                Inicio
+              </button>
+              <span aria-hidden="true">/</span>
+              {page === 'reception' && receptionView !== 'home' && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setReceptionView('home');
+                      setEditing(null);
+                    }}
+                  >
+                    Recepción
+                  </button>
+                  <span aria-hidden="true">/</span>
+                </>
+              )}
+              <strong aria-current="page">{pageTitle}</strong>
+            </nav>
             <div className="header-date">
               {new Date().toLocaleDateString('es-MX', {
                 weekday: 'long',
@@ -937,20 +1156,8 @@ export default function Home() {
             <div className="page-heading">
               <div>
                 <span className="eyebrow">DENTALRISK / {roleInfo.title.toUpperCase()}</span>
-                <h1>
-                  {page === 'dashboard'
-                    ? user.role === 'ADMIN'
-                      ? 'Panel ejecutivo'
-                      : 'Mi productividad'
-                    : title}
-                </h1>
-                <p>
-                  {page === 'dashboard'
-                    ? roleInfo.intro
-                    : user.role === 'ADMIN'
-                      ? 'Supervisa resultados y administra la clínica.'
-                      : roleInfo.intro}
-                </p>
+                <h1>{pageTitle}</h1>
+                <p>{pageDescription}</p>
               </div>
               <button onClick={() => action(refresh, 'Información actualizada')} disabled={pending}>
                 ↻ Actualizar
@@ -971,7 +1178,8 @@ export default function Home() {
                 {notice}
               </div>
             )}
-            {['reception', 'attentions', 'appointments'].includes(page) && (
+            {page === 'assistant' && <AssistantChat api={api} />}
+            {['attentions', 'appointments'].includes(page) && (
               <div className="toolbar clinical-toolbar">
                 <label>
                   Fecha de {page === 'appointments' ? 'cita' : 'registro'}
@@ -1071,15 +1279,15 @@ export default function Home() {
                 exportQuery={params()}
               />
             )}
-            {page === 'reception' && (
+            {page === 'reception' && receptionView === 'home' && (
               <>
                 <div className="kpis reception-kpis" aria-label="Resumen de la jornada">
                   {[
                     [
-                      'Citas de hoy',
-                      Object.values(overview?.appointments ?? {}).reduce((n: number, v) => n + Number(v), 0),
+                      'Citas hoy',
+                      Number(overview?.appointments.SCHEDULED ?? 0) +
+                        Number(overview?.appointments.ATTENDED ?? 0),
                     ],
-                    ['En espera', overview?.attentions.PENDING ?? 0],
                     ['En atención', overview?.attentions.IN_PROGRESS ?? 0],
                     ['Tarjetas disponibles', overview?.available_cards ?? 0],
                   ].map(([label, value]) => (
@@ -1092,65 +1300,133 @@ export default function Home() {
                     </article>
                   ))}
                 </div>
-                <p className="muted small">
-                  La espera y las atenciones en curso incluyen pendientes de días anteriores. La lista
-                  inferior aplica los filtros de fecha y estado seleccionados.
-                </p>
-                <div className="workflow">
-                  <span>01 · Seleccionar paciente</span>
-                  <span>02 · Vincular tarjeta</span>
-                  <span>03 · Atención RFID</span>
-                  <span>04 · Liberar tarjeta</span>
-                </div>
-                <div className="tabs" aria-label="Acciones de recepción">
-                  <a className="button" href="#pacientes">
-                    Registrar o buscar paciente
-                  </a>
-                  <button onClick={() => setPage('appointments')}>Nueva cita</button>
-                  <a className="button primary" href="#vinculacion">
-                    Vincular tarjeta
-                  </a>
-                </div>
-                <section className="panel" id="vinculacion">
-                  <p className="context-note">
-                    Selecciona los datos de la atención y una tarjeta disponible. Con los datos listos,
-                    confirma en un clic.
-                  </p>
-                  <Form
-                    title="Vincular nueva atención"
-                    fields={bindingFields}
-                    path="/attentions"
-                    submitLabel="Confirmar vinculación"
+                <section className="panel">
+                  <div className="panel-heading">
+                    <div>
+                      <h2>Citas de hoy</h2>
+                      <p>Revisa hora, paciente, servicio y estado de cada cita.</p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setEditing(null);
+                        setPage('appointments');
+                      }}
+                    >
+                      Abrir agenda
+                    </button>
+                  </div>
+                  <Table
+                    items={data.appointments ?? []}
+                    columns={[
+                      ['appointment_time', 'Hora'],
+                      ['patient', 'Paciente'],
+                      ['service', 'Servicio'],
+                      ['status', 'Estado'],
+                    ]}
+                    actions={(appointment) =>
+                      appointment.status === 'SCHEDULED' ? (
+                        <button
+                          onClick={() => {
+                            setEditing({ ...appointment, mode: 'bind' });
+                            setPage('attentions');
+                          }}
+                        >
+                          Vincular tarjeta
+                        </button>
+                      ) : null
+                    }
                   />
                 </section>
+                <div className="tabs" aria-label="Acciones de recepción">
+                  <button
+                    className="primary"
+                    onClick={() => {
+                      setEditing(null);
+                      setReceptionView('patients');
+                    }}
+                  >
+                    Registrar paciente
+                  </button>
+                  <button
+                    onClick={() => {
+                      setEditing(null);
+                      setPage('appointments');
+                    }}
+                  >
+                    Nueva cita
+                  </button>
+                  <button
+                    onClick={() => {
+                      setEditing(null);
+                      setReceptionView('bind');
+                    }}
+                  >
+                    Vincular tarjeta
+                  </button>
+                </div>
+              </>
+            )}
+            {page === 'reception' && receptionView === 'patients' && (
+              <>
+                <button
+                  onClick={() => {
+                    setEditing(null);
+                    setReceptionView('home');
+                  }}
+                >
+                  ← Volver a recepción
+                </button>
                 <section className="panel" id="pacientes">
-                  <h2>Registrar paciente</h2>
+                  <h2>Pacientes</h2>
+                  <p className="context-note">
+                    Busca por nombre o folio antes de crear un registro para detectar coincidencias.
+                  </p>
+                  <p className="muted small">
+                    Si no capturas un folio, DentalRisk asigna uno automáticamente.
+                  </p>
                   <Form
-                    title="Datos mínimos de identificación"
-                    fields={catalogConfig.patients.fields}
+                    title={editing?.mode === 'patient' ? 'Editar paciente' : 'Registro rápido'}
+                    description="Para un alta nueva solo necesitas el nombre. El folio puede generarse automáticamente."
+                    fields={
+                      editing?.mode === 'patient'
+                        ? catalogConfig.patients.fields
+                        : catalogConfig.patients.fields.filter((field) => field.key !== 'active')
+                    }
                     path={editing?.mode === 'patient' ? `/patients/${editing.id}` : '/patients'}
                     method={editing?.mode === 'patient' ? 'PATCH' : 'POST'}
                     initial={editing?.mode === 'patient' ? editing : undefined}
+                    submitLabel="Guardar paciente"
                   />
                   <form
                     className="toolbar"
                     onSubmit={(e) => {
                       e.preventDefault();
-                      setPatientQuery(String(new FormData(e.currentTarget).get('search') ?? ''));
+                      setPatientQuery(patientSearchText.trim());
                     }}
                   >
                     <label>
                       Buscar paciente por nombre o folio
-                      <input name="search" type="search" maxLength={100} />
+                      <input
+                        name="search"
+                        type="search"
+                        maxLength={100}
+                        value={patientSearchText}
+                        onChange={(e) => setPatientSearchText(e.target.value)}
+                      />
                     </label>
                     <button>Buscar</button>
-                    <button type="button" onClick={() => setPatientQuery('')}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPatientSearchText('');
+                        setPatientQuery('');
+                      }}
+                    >
                       Ver todos
                     </button>
                   </form>
                   <p className="muted small">
-                    {totals.patients ?? 0} coincidencias. Se muestran hasta 200; usa el folio para una
-                    búsqueda precisa.
+                    {totals.patients ?? 0} coincidencias. Usa el folio para una búsqueda precisa.
                   </p>
                   <Table
                     items={data.patients ?? []}
@@ -1160,9 +1436,29 @@ export default function Home() {
                     )}
                   />
                 </section>
-                <section className="panel">
-                  <h2>Atenciones y tarjetas</h2>
-                  {attentionTable}
+              </>
+            )}
+            {page === 'reception' && receptionView === 'bind' && (
+              <>
+                <button
+                  onClick={() => {
+                    setEditing(null);
+                    setReceptionView('home');
+                  }}
+                >
+                  ← Volver a recepción
+                </button>
+                <section className="panel" id="vinculacion">
+                  <p className="context-note">
+                    Selecciona paciente, servicio, dentista, consultorio y tarjeta RFID. El precio aparece al
+                    elegir el servicio.
+                  </p>
+                  <Form
+                    title="Vincular nueva atención"
+                    fields={bindingFields}
+                    path="/attentions"
+                    submitLabel="Confirmar vinculación"
+                  />
                 </section>
               </>
             )}
@@ -1384,8 +1680,18 @@ export default function Home() {
                         }, 'Lectura procesada');
                       }}
                     >
-                      <SimulatorSelect label="Estación" name="station_id" items={data.stations ?? []} valueOf={(item) => item.id} />
-                      <SimulatorSelect label="Tarjeta" name="uid" items={data.cards ?? []} valueOf={(item) => item.uid} />
+                      <SimulatorSelect
+                        label="Estación"
+                        name="station_id"
+                        items={data.stations ?? []}
+                        valueOf={(item) => item.id}
+                      />
+                      <SimulatorSelect
+                        label="Tarjeta"
+                        name="uid"
+                        items={data.cards ?? []}
+                        valueOf={(item) => item.uid}
+                      />
                       <button className="primary" disabled={pending}>
                         Simular escaneo
                       </button>
@@ -1443,7 +1749,7 @@ export default function Home() {
                     </div>
                   </section>
                 )}
-                <div className="tabs">
+                <div className="tabs settings-tabs">
                   {Object.entries(catalogConfig)
                     .filter(([key]) => key !== 'patients')
                     .map(([key, c]) => (
@@ -1466,7 +1772,7 @@ export default function Home() {
                   </button>
                 </div>
                 {category === 'calendar' ? (
-                  <section className="panel">
+                  <section className="panel catalog-panel">
                     <form
                       className="form-grid"
                       onSubmit={(e) => {
@@ -1521,7 +1827,7 @@ export default function Home() {
                     />
                   </section>
                 ) : (
-                  <section className="panel">
+                  <section className="panel catalog-panel">
                     <Form
                       title={
                         editing
@@ -1607,6 +1913,7 @@ export default function Home() {
                     {editing?.mode === 'user' && (
                       <Form
                         title={'Editar cuenta de ' + editing.name}
+                        description="Al elegir Dentista, DentalRisk vincula o crea su perfil profesional automáticamente."
                         path={`/users/${editing.id}`}
                         method="PATCH"
                         initial={editing}
@@ -1622,38 +1929,33 @@ export default function Home() {
                             ],
                           },
                           {
-                            key: 'dentist_id',
-                            label: 'Dentista (si corresponde)',
-                            options: 'dentists',
-                            required: false,
-                          },
-                          {
                             key: 'password',
                             label: 'Contraseña nueva (opcional, mín. 12 caracteres)',
                             type: 'password',
                             required: false,
+                            autoComplete: 'new-password',
                           },
                         ]}
                       />
                     )}
                     <Form
-                      title="Crear cuenta individual"
+                      title="Crear cuenta"
+                      description="Selecciona el rol. Si es Dentista, el perfil profesional y su identificador se gestionan automáticamente."
                       fields={[
-                        { key: 'name', label: 'Nombre' },
-                        { key: 'email', label: 'Correo', type: 'email' },
-                        { key: 'password', label: 'Contraseña (mín. 12 caracteres)', type: 'password' },
+                        { key: 'name', label: 'Nombre', autoComplete: 'off' },
+                        { key: 'email', label: 'Correo', type: 'email', autoComplete: 'off' },
+                        {
+                          key: 'password',
+                          label: 'Contraseña temporal (mín. 12 caracteres)',
+                          type: 'password',
+                          autoComplete: 'new-password',
+                        },
                         {
                           key: 'role',
                           label: 'Rol',
                           values: Object.entries(labels).filter(([k]) =>
                             ['ADMIN', 'RECEPTION', 'DENTIST', 'SUPPORT'].includes(k),
                           ),
-                        },
-                        {
-                          key: 'dentist_id',
-                          label: 'Dentista (para rol Dentista)',
-                          options: 'dentists',
-                          required: false,
                         },
                       ]}
                       path="/users"
@@ -1685,30 +1987,27 @@ export default function Home() {
                     />
                   </section>
                 )}
-                <section className="panel">
-                  <h2>Estado del sistema</h2>
-                  <p>
-                    Base de datos: {diagnostics?.database ?? '—'} · Entorno: {diagnostics?.mode ?? '—'}
-                  </p>
-                  <p className="muted">Lector físico: pendiente de validación en clínica.</p>
-                </section>
-                <section className="panel">
-                  <h2>Bitácora de auditoría</h2>
-                  <Table
-                    items={data.audit ?? []}
-                    columns={[
-                      ['created_at', 'Fecha'],
-                      ...(user.role === 'ADMIN' ? ([['actor', 'Responsable']] as [string, string][]) : []),
-                      ['action', 'Operación'],
-                      ...(user.role === 'ADMIN'
-                        ? ([
-                            ['entity_id', 'Referencia'],
-                            ['detail', 'Detalle'],
-                          ] as [string, string][])
-                        : []),
-                    ]}
-                  />
-                </section>
+                {user.role === 'SUPPORT' && (
+                  <>
+                    <section className="panel">
+                      <h2>Estado del sistema</h2>
+                      <p>
+                        Base de datos: {diagnostics?.database ?? '—'} · Entorno: {diagnostics?.mode ?? '—'}
+                      </p>
+                      <p className="muted">Lector físico: pendiente de validación en clínica.</p>
+                    </section>
+                    <section className="panel">
+                      <h2>Bitácora técnica</h2>
+                      <Table
+                        items={data.audit ?? []}
+                        columns={[
+                          ['created_at', 'Fecha'],
+                          ['action', 'Operación'],
+                        ]}
+                      />
+                    </section>
+                  </>
+                )}
               </>
             )}
             {page === 'account' && (

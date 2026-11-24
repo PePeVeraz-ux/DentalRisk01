@@ -24,4 +24,4 @@ La cuenta de estación posee token independiente, almacenado como hash y revocab
 
 Zona inicial America/Tijuana; fechas persistidas en UTC. Precios en centavos enteros; no se realizan sumas monetarias binarias. Relectura predeterminada 2,000 ms; interfaz consulta cada 4 segundos. La presentación muestra el momento de generación para no confundir información antigua con confirmación de una operación.
 
-Los días operados y descansos se configuran expresamente. No se deducen de la presencia de atenciones, lo que permite incluir turnos sin pacientes en la productividad.
+Los días sin pacientes y los descansos se pueden configurar expresamente. Cuando existe una atención real, el sistema marca automáticamente el día y el horario como operados; así recepción no necesita preparar el calendario antes de cada lectura.

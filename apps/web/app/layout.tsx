@@ -4,6 +4,10 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'DentalRisk · Control de la clínica',
   description: 'Control operativo y productividad de la clínica dental',
+  icons: {
+    icon: '/brand/dentalrisk-mark.png',
+    apple: '/brand/dentalrisk-mark.png',
+  },
 };
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (

@@ -11,6 +11,7 @@ import { DateTime } from 'luxon';
 import PDFDocument from 'pdfkit';
 import ExcelJS from 'exceljs';
 import type { Database } from './db.js';
+import { assistantChat, assistantStatus, confirmPatient } from './assistant.js';
 import {
   audit,
   bind,
@@ -168,6 +169,7 @@ export async function buildApp({
     allowed: readonly string[],
     body: z.ZodType | undefined,
     handler: Handler,
+    routeConfig?: { rateLimit?: { max: number; timeWindow: string | number } },
   ) {
     const operational =
       method !== 'GET' &&
@@ -253,6 +255,7 @@ export async function buildApp({
       method,
       url,
       schema,
+      ...(routeConfig ? { config: routeConfig } : {}),
       preHandler: async (req) => {
         const user = await authorize(req, allowed);
         if (operational && user.role === 'ADMIN') {
@@ -269,6 +272,46 @@ export async function buildApp({
       },
     });
   }
+  const assistantChatSchema = z
+    .object({
+      messages: z
+        .array(
+          z
+            .object({
+              role: z.enum(['user', 'assistant']),
+              content: z.string().trim().min(1).max(4000),
+            })
+            .strict(),
+        )
+        .min(1)
+        .max(12),
+    })
+    .strict();
+  route('GET', '/api/v1/assistant/status', ['ADMIN'], undefined, async () => assistantStatus());
+  route(
+    'POST',
+    '/api/v1/assistant/chat',
+    ['ADMIN'],
+    assistantChatSchema,
+    async (req, _reply, user) => {
+      const body = req.body as { messages: { role: 'user' | 'assistant'; content: string }[] };
+      requireThat(
+        body.messages.at(-1)?.role === 'user',
+        'El último mensaje debe ser una pregunta del dueño',
+        400,
+      );
+      return assistantChat(db, user, body, clock);
+    },
+    { rateLimit: { max: 12, timeWindow: '1 minute' } },
+  );
+  route(
+    'POST',
+    '/api/v1/assistant/patients/confirm',
+    ['ADMIN'],
+    z.object({ proposal_id: key, approved: z.boolean() }).strict(),
+    async (req, _reply, user) => confirmPatient(db, user, req.body as any),
+    { rateLimit: { max: 20, timeWindow: '1 minute' } },
+  );
   app.get('/api/v1/health', async () => ({ status: 'ok', service: 'DentalRisk' }));
   app.post(
     '/api/v1/sessions',
@@ -424,6 +467,41 @@ export async function buildApp({
   route('GET', '/api/v1/users', ['ADMIN'], undefined, async () => ({
     items: (await db.query('SELECT id,name,email,role,dentist_id,active FROM users ORDER BY name')).rows,
   }));
+  async function resolveDentistProfile(
+    tx: { query(sql: string, values?: any[]): Promise<{ rows: any[] }> },
+    name: string,
+    requestedId?: string | null,
+    currentUserId?: string,
+  ) {
+    if (requestedId) {
+      const dentist = await one(tx, 'dentists', requestedId);
+      requireThat(dentist.active, 'El perfil profesional está inactivo');
+      const linked = (
+        await tx.query('SELECT id FROM users WHERE dentist_id=$1 AND id<>$2 LIMIT 1', [
+          requestedId,
+          currentUserId ?? '',
+        ])
+      ).rows[0];
+      requireThat(!linked, 'Ese perfil profesional ya pertenece a otra cuenta');
+      return requestedId;
+    }
+    const available = (
+      await tx.query(
+        `SELECT d.id FROM dentists d
+         WHERE d.active=true AND lower(btrim(d.name))=lower(btrim($1))
+           AND NOT EXISTS (SELECT 1 FROM users u WHERE u.dentist_id=d.id AND u.id<>$2)
+         ORDER BY d.id LIMIT 2`,
+        [name, currentUserId ?? ''],
+      )
+    ).rows;
+    requireThat(
+      available.length < 2,
+      'Hay varios especialistas con ese nombre. Diferencia el nombre en Equipo y desempeño antes de crear la cuenta.',
+    );
+    if (available.length === 1) return available[0].id as string;
+    return (await tx.query('INSERT INTO dentists(name) VALUES($1) RETURNING id', [name])).rows[0]
+      .id as string;
+  }
   route(
     'POST',
     '/api/v1/users',
@@ -439,14 +517,15 @@ export async function buildApp({
       .strict(),
     async (req, _p, u) => {
       const b = req.body as any;
-      requireThat(b.role !== 'DENTIST' || b.dentist_id, 'El dentista requiere una referencia', 400);
       const password_hash = await argon2.hash(b.password, { type: argon2.argon2id });
       return db.transaction(async (tx) => {
-        const uid = id();
-        await tx.query(
-          'INSERT INTO users(id,name,email,password_hash,role,dentist_id) VALUES($1,$2,$3,$4,$5,$6)',
-          [uid, b.name, b.email.toLowerCase(), password_hash, b.role, b.dentist_id ?? null],
-        );
+        const dentistId = b.role === 'DENTIST' ? await resolveDentistProfile(tx, b.name, b.dentist_id) : null;
+        const uid = (
+          await tx.query(
+            'INSERT INTO users(name,email,password_hash,role,dentist_id) VALUES($1,$2,$3,$4,$5) RETURNING id',
+            [b.name, b.email.toLowerCase(), password_hash, b.role, dentistId],
+          )
+        ).rows[0].id;
         await audit(tx, u.id, 'user.create', uid);
         return publicUser(await one(tx, 'users', uid));
       });
@@ -481,7 +560,14 @@ export async function buildApp({
           );
           requireThat(remaining > 1, 'Debe permanecer al menos una cuenta de administración activa');
         }
-        requireThat(after.role !== 'DENTIST' || after.dentist_id, 'Falta referencia del dentista', 400);
+        if (after.role === 'DENTIST') {
+          after.dentist_id = await resolveDentistProfile(
+            tx,
+            before.name,
+            b.dentist_id ?? before.dentist_id,
+            uid,
+          );
+        }
         await tx.query('UPDATE users SET active=$2,role=$3,dentist_id=$4,password_hash=$5 WHERE id=$1', [
           uid,
           after.active,
@@ -521,7 +607,13 @@ export async function buildApp({
       write: ['ADMIN'],
     },
     patients: {
-      schema: z.object({ name: text, reference: text, active: z.boolean().optional() }).strict(),
+      schema: z
+        .object({
+          name: text,
+          reference: text.optional().describe('Opcional; DentalRisk asigna un folio si se omite.'),
+          active: z.boolean().optional(),
+        })
+        .strict(),
       fields: ['name', 'reference', 'active'],
       read: ['ADMIN', 'RECEPTION'],
       write: ['ADMIN', 'RECEPTION'],
@@ -584,12 +676,19 @@ export async function buildApp({
       };
     });
     route('POST', `/api/v1/${name}`, config.write, config.schema, async (req, _p, u) => {
-      const b = req.body as any;
+      let b = req.body as any;
       if (name === 'shifts')
         requireThat(b.end_time > b.start_time, 'El turno debe terminar después de iniciar', 400);
-      const cols = config.fields.filter((f) => b[f] !== undefined);
       const uid = id();
       return db.transaction(async (tx) => {
+        if (name === 'patients' && !b.reference) {
+          let reference: string;
+          do {
+            reference = `P-${id().replaceAll('-', '').slice(0, 10).toUpperCase()}`;
+          } while ((await tx.query('SELECT id FROM patients WHERE reference=$1', [reference])).rows.length);
+          b = { ...b, reference };
+        }
+        const cols = config.fields.filter((f) => b[f] !== undefined);
         await tx.query(
           `INSERT INTO ${name}(id,${cols.join(',')}) VALUES($1,${cols.map((_, i) => `$${i + 2}`).join(',')})`,
           [uid, ...cols.map((c) => b[c])],
@@ -862,12 +961,12 @@ export async function buildApp({
         service_id: key,
         dentist_id: key,
         station_id: key,
-        shift_id: key,
+        shift_id: key.optional(),
         card_id: key,
         appointment_id: key.optional(),
       })
       .strict(),
-    async (req, _p, u) => bind(db, u.id, req.body),
+    async (req, _p, u) => bind(db, u.id, req.body, clock),
   );
   route(
     'POST',
@@ -1027,14 +1126,7 @@ export async function buildApp({
     const { format, ...f } = filterSchema.extend({ format: z.enum(['csv', 'pdf', 'xlsx']) }).parse(req.query);
     const r = await report(db, f, u);
     const rows = [
-      [
-        'Dentista',
-        'Servicio',
-        'Atenciones',
-        'Pacientes distintos',
-        'Promedio minutos',
-        'Valor servicios MXN',
-      ],
+      ['Dentista', 'Servicio', 'Atenciones', 'Pacientes', 'Promedio minutos', 'Valor servicios MXN'],
       ...r.groups.map((g) => [
         g.dentist,
         g.service,

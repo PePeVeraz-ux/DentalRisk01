@@ -8,7 +8,7 @@ const credentials = JSON.parse(await readFile('.local/seed-coherent-credentials.
 const reception = credentials.find((item: any) => item.role === 'RECEPTION');
 assert.ok(reception);
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-const active = (await pool.query("SELECT c.uid, s.name AS station, p.name AS patient FROM attentions a JOIN cards c ON c.id=a.card_id JOIN stations s ON s.id=a.station_id JOIN patients p ON p.id=a.patient_id WHERE a.status='IN_PROGRESS' AND c.uid LIKE 'QA-20261112-%' ORDER BY a.created_at DESC LIMIT 1")).rows[0];
+const active = (await pool.query("SELECT c.uid, s.name AS station, p.name AS patient FROM attentions a JOIN cards c ON c.id=a.card_id JOIN stations s ON s.id=a.station_id JOIN patients p ON p.id=a.patient_id WHERE a.status='IN_PROGRESS' ORDER BY a.created_at DESC LIMIT 1")).rows[0];
 await pool.end();
 assert.ok(active, 'No se encontró atención sintética en curso');
 const browser = await chromium.launch({ channel: 'chrome', headless: true });
