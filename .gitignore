@@ -1,2 +1,42 @@
+# Dependencies
 node_modules/
+.venv/
+venv/
+
+# Secrets and machine-local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Local databases, backups and runtime state
+.local/
+*.dump
+*.log
+*.pid
+
+# Next.js and build caches
+apps/web/.next/
+apps/web/.next-*/
+.next/
+dist/
+build/
+coverage/
+
+# Python and test caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Temporary work products
+.tmp-*/
+tmp/
+AgenteIA.zip
+
+# Editor and OS metadata
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
 
