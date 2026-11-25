@@ -1,0 +1,14 @@
+{
+  "date": "20261110T041837Z",
+  "target_database": "dentalrisk",
+  "agent_tables_copied": {
+    "agent_users": 0,
+    "agent_login_attempts": 0,
+    "agent_sessions": 0,
+    "agent_audit": 0,
+    "agent_operations": 0
+  },
+  "backups_created": true,
+  "shared_users": true,
+  "clinical_connector_enabled": true
+}

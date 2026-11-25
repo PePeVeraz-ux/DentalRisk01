@@ -1,0 +1,5 @@
+# Opt-in LAN binding. Both the original loopback and this exact LAN IP are published.
+services:
+  api:
+    ports:
+      - "${ESP_API_BIND_ADDRESS:?Configure the current LAN IP}:${ESP_API_PORT:-8000}:8000"

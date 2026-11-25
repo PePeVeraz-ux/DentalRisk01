@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-12T02:33:55.435669+00:00",
+  "database": "PostgreSQL",
+  "storage": "MinIO S3 real",
+  "inference": false,
+  "esp_hardware": false,
+  "esp_source": "isolated HTTP simulator of the ESP attachment endpoint",
+  "checks": [
+    "migration_from_empty_database",
+    "postgresql_schema_matches_models_including_utc",
+    "postgresql_login_and_session",
+    "upload_retrieve_real_minio",
+    "anonymous_object_denied",
+    "persisted_session_revocation",
+    "esp_delegated_connection",
+    "esp_create_user_idempotent",
+    "esp_http_attachment_to_real_minio",
+    "profile_schema_reference",
+    "esp_photo_retry_idempotent",
+    "concurrent_owner_changes_preserve_active_owner"
+  ],
+  "status": "passed",
+  "isolated_resources_removed": true
+}

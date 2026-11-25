@@ -1,0 +1,47 @@
+name: dentalrisk-agent
+services:
+  db:
+    image: postgres@sha256:266d3c257594e195b309ae9d1805e54c788f1d7b375f56bf6c367aac6c917e7b
+    environment:
+      POSTGRES_USER: dentalrisk_agent
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Run prepare_env.py}
+      POSTGRES_DB: dentalrisk_agent
+      TZ: UTC
+    ports: ["127.0.0.1:5434:5432"]
+    volumes: ["agent_db:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dentalrisk_agent -d dentalrisk_agent"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  minio:
+    image: coollabsio/minio@sha256:4f75fd76598afa23919555d1363e1fb13c632d9bcd4ce8edcf21d3cca2ed0579
+    command: server /data --console-address :9001
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:?Run prepare_env.py}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:?Run prepare_env.py}
+    ports: ["127.0.0.1:9100:9000", "127.0.0.1:9101:9001"]
+    volumes: ["agent_objects:/data"]
+  migrate:
+    build: .
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://dentalrisk_agent:${POSTGRES_PASSWORD}@db:5432/dentalrisk_agent
+    command: ["alembic", "upgrade", "head"]
+    depends_on:
+      db: {condition: service_healthy}
+  api:
+    build: .
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://dentalrisk_agent:${POSTGRES_PASSWORD}@db:5432/dentalrisk_agent
+      MINIO_ENDPOINT: http://minio:9000
+    ports: ["127.0.0.1:8000:8000"]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+      minio: {condition: service_started}
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+volumes:
+  agent_db:
+  agent_objects:

@@ -64,7 +64,11 @@ export async function buildApp({
     throw new Error('SESSION_HOURS debe estar entre 1 y 24');
   if (!Number.isInteger(debounce) || debounce < 0 || debounce > 30000)
     throw new Error('RFID_DEBOUNCE_MS debe estar entre 0 y 30000');
-  if (production && !origin.startsWith('https://'))
+  const localHttpAllowed =
+    process.env.ALLOW_HTTP_LOCALHOST === 'true' &&
+    parsedOrigin.protocol === 'http:' &&
+    ['localhost', '127.0.0.1', '[::1]'].includes(parsedOrigin.hostname);
+  if (production && !origin.startsWith('https://') && !localHttpAllowed)
     throw new Error('APP_ORIGIN debe usar HTTPS en producción');
   const trustedOrigins = new Set([origin]);
   // En desarrollo, las direcciones de loopback representan el mismo servidor local.

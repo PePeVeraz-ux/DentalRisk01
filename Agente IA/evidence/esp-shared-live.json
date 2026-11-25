@@ -1,0 +1,58 @@
+{
+  "at": "2026-11-12T23:13:44.197960+00:00",
+  "status": "passed",
+  "esp_host": "192.168.100.18",
+  "api_host": "192.168.100.17",
+  "shared_database": "dentalrisk",
+  "clinical_login_status": 200,
+  "synthetic_user_id": "2ea345ea-a97d-41c3-983e-6fe1e86d1178",
+  "checks": [
+    "esp_connection",
+    "esp_clinical_summary",
+    "esp_clinical_records_redacted",
+    "esp_user_create",
+    "shared_dentalrisk_login",
+    "esp_profile_upload",
+    "minio_jpeg",
+    "anonymous_minio_denied"
+  ],
+  "http_calls": [
+    {
+      "method": "GET",
+      "path": "/api/v1/agent/connection",
+      "status": 200,
+      "tool_error": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/agent/clinical/summary",
+      "status": 200,
+      "tool_error": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/agent/clinical/records",
+      "status": 200,
+      "tool_error": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/agent/users",
+      "status": 422,
+      "tool_error": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/agent/users",
+      "status": 201,
+      "tool_error": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/agent/users/2ea345ea-a97d-41c3-983e-6fe1e86d1178/profile-pic",
+      "status": 200,
+      "tool_error": false
+    }
+  ],
+  "secrets_excluded": true
+}

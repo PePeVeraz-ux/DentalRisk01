@@ -1,0 +1,149 @@
+name: dentalrisk
+
+services:
+  database:
+    image: postgres:17-bookworm
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: dentalrisk
+      POSTGRES_USER: dentalrisk_owner
+      POSTGRES_PASSWORD: ${POSTGRES_OWNER_PASSWORD:?Configura POSTGRES_OWNER_PASSWORD en .env}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:?Configura APP_DB_PASSWORD en .env}
+      BACKUP_DB_PASSWORD: ${BACKUP_DB_PASSWORD:?Configura BACKUP_DB_PASSWORD en .env}
+    volumes:
+      - dentalrisk_database:/var/lib/postgresql/data
+      - ./deploy/init-db.sh:/docker-entrypoint-initdb.d/10-users.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dentalrisk_owner -d dentalrisk"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks: [dentalrisk_private]
+
+  clinic-init:
+    build:
+      context: .
+      target: build
+    environment:
+      DATABASE_URL: postgresql://dentalrisk_owner:${POSTGRES_OWNER_PASSWORD}@database:5432/dentalrisk
+      ADMIN_EMAIL: ${ADMIN_EMAIL:?Configura ADMIN_EMAIL en .env}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Configura ADMIN_PASSWORD en .env}
+    command: ["node", "--import", "tsx", "scripts/initialize.ts"]
+    depends_on:
+      database:
+        condition: service_healthy
+    restart: "no"
+    networks: [dentalrisk_private]
+
+  app:
+    build:
+      context: .
+      target: runtime
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      NEXT_DIST_DIR: .next
+      HOST: 0.0.0.0
+      PORT: 4000
+      APP_ORIGIN: ${APP_ORIGIN:-http://localhost:3000}
+      ALLOW_HTTP_LOCALHOST: "true"
+      DATABASE_URL: postgresql://dentalrisk_app:${APP_DB_PASSWORD}@database:5432/dentalrisk
+      CLINIC_TIMEZONE: ${CLINIC_TIMEZONE:-America/Tijuana}
+      RFID_DEBOUNCE_MS: ${RFID_DEBOUNCE_MS:-2000}
+      SESSION_HOURS: ${SESSION_HOURS:-8}
+      AGENT_CHAT_BASE_URL: ${AGENT_CHAT_BASE_URL:-}
+      AGENT_CHAT_MODEL: ${AGENT_CHAT_MODEL:-}
+      AGENT_CHAT_API_KEY: ${AGENT_CHAT_API_KEY:-}
+    ports:
+      - "127.0.0.1:${DENTALRISK_PORT:-3000}:3000"
+    depends_on:
+      clinic-init:
+        condition: service_completed_successfully
+    networks: [dentalrisk_private]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+
+  agent-minio:
+    image: coollabsio/minio@sha256:4f75fd76598afa23919555d1363e1fb13c632d9bcd4ce8edcf21d3cca2ed0579
+    command: server /data --console-address :9001
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:?Configura MINIO_ACCESS_KEY en .env}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:?Configura MINIO_SECRET_KEY en .env}
+    volumes:
+      - dentalrisk_agent_objects:/data
+    networks: [dentalrisk_private]
+
+  agent-migrate:
+    build:
+      context: ./Agente IA
+    environment:
+      ENVIRONMENT: development
+      DATABASE_URL: postgresql+psycopg://dentalrisk_owner:${POSTGRES_OWNER_PASSWORD}@database:5432/dentalrisk
+      AGENT_DB_PASSWORD: ${AGENT_DB_PASSWORD:?Configura AGENT_DB_PASSWORD en .env}
+      SECRET_KEY: ${AGENT_SECRET_KEY:?Configura AGENT_SECRET_KEY en .env}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      CLINICAL_CONNECTOR_ENABLED: "true"
+    command: ["python", "scripts/provision_shared_deploy.py"]
+    depends_on:
+      clinic-init:
+        condition: service_completed_successfully
+    restart: "no"
+    networks: [dentalrisk_private]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+
+  agent-storage:
+    build:
+      context: ./Agente IA
+    environment:
+      ENVIRONMENT: development
+      DATABASE_URL: postgresql+psycopg://dentalrisk_agent:${AGENT_DB_PASSWORD}@database:5432/dentalrisk
+      SECRET_KEY: ${AGENT_SECRET_KEY}
+      MINIO_ENDPOINT: http://agent-minio:9000
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      MINIO_BUCKET: ${MINIO_BUCKET:-dentalrisk-profiles}
+      CLINICAL_CONNECTOR_ENABLED: "true"
+      CLINIC_TIMEZONE: ${CLINIC_TIMEZONE:-America/Tijuana}
+    command: ["python", "scripts/provision_storage.py"]
+    depends_on:
+      agent-minio:
+        condition: service_started
+      agent-migrate:
+        condition: service_completed_successfully
+    restart: "no"
+    networks: [dentalrisk_private]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+
+  agent-api:
+    build:
+      context: ./Agente IA
+    restart: unless-stopped
+    environment:
+      ENVIRONMENT: development
+      DATABASE_URL: postgresql+psycopg://dentalrisk_agent:${AGENT_DB_PASSWORD}@database:5432/dentalrisk
+      SECRET_KEY: ${AGENT_SECRET_KEY}
+      MINIO_ENDPOINT: http://agent-minio:9000
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      MINIO_BUCKET: ${MINIO_BUCKET:-dentalrisk-profiles}
+      CLINICAL_CONNECTOR_ENABLED: "true"
+      CLINIC_TIMEZONE: ${CLINIC_TIMEZONE:-America/Tijuana}
+    ports:
+      - "127.0.0.1:${AGENT_API_PORT:-8000}:8000"
+    depends_on:
+      agent-storage:
+        condition: service_completed_successfully
+    networks: [dentalrisk_private]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+
+networks:
+  dentalrisk_private:
+
+volumes:
+  dentalrisk_database:
+  dentalrisk_agent_objects:

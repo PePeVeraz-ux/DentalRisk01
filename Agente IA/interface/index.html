@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Denti · Centro del agente</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<aside class="sidebar">
+  <a class="brand" href="#resumen"><span class="brand-icon">d<span>•</span></span><span id="brand">denti<span class="brand-period">.</span></span></a>
+  <div class="workspace"><span class="workspace-icon">DR</span><div><strong id="project">DentalRisk</strong><small>Espacio del agente</small></div><span class="workspace-arrow">⌄</span></div>
+  <div class="nav-label">CENTRO DE CONTROL</div>
+  <nav aria-label="Navegación principal">
+    <button data-tab="resumen" class="nav-button active"><span>◫</span> Resumen</button>
+    <button data-tab="actividad" class="nav-button"><span>≋</span> Actividad <b id="activity-count">24</b></button>
+    <button data-tab="reportes" class="nav-button"><span>▥</span> Reportes</button>
+    <button data-tab="configuracion" class="nav-button"><span>⚙</span> Configuración</button>
+  </nav>
+  <div class="agent-card"><span class="spark">✧</span><strong id="agent-name">Denti, tu agente</strong><p id="agent-description">Un vistazo a lo que el agente ha realizado.</p><span class="model-chip">DeepSeek-V4-Pro</span></div>
+  <div class="sidebar-bottom"><span class="avatar">DR</span><div><strong>Vista de supervisión</strong><small>Prototipo académico</small></div></div>
+</aside>
+<main>
+  <header class="topbar"><span><span class="breadcrumb" id="breadcrumb-project">DentalRisk</span><span class="slash">/</span><strong id="breadcrumb">Resumen</strong></span><span class="topbar-right"><span class="demo-dot"></span> Entorno de demostración <span class="top-avatar">D</span></span></header>
+  <div class="page">
+    <div class="heading"><div><div class="eyebrow">INTERFAZ DEL AGENTE</div><h1 id="page-title">Cada acción, en perspectiva.</h1><p id="page-subtitle">Supervisa la actividad de Denti desde un solo lugar.</p></div><button class="button export" id="export">↓ <span>Exportar CSV</span></button></div>
+    <div class="notice"><span class="notice-icon">i</span><span><strong>Vista previa con datos de ejemplo.</strong> Las cifras ilustran la interfaz; no representan actividad real de la clínica.</span></div>
+    <div class="toolbar"><div class="segment" aria-label="Periodo"><button data-period="7" class="selected" aria-pressed="true">Últimos 7 días</button><button data-period="3" aria-pressed="false">Últimos 3 días</button><button data-period="1" aria-pressed="false">Hoy</button></div><span class="date-label" id="date-label">21 - 27 oct 2026</span></div>
+    <section id="resumen" class="view">
+      <div id="metrics" class="metrics"></div>
+      <div class="chart-grid"><article class="panel trend-panel"><div class="panel-heading"><div><h2>Actividad del agente</h2><p>Operaciones completadas por día</p></div><span class="legend"><i></i> Completadas</span></div><div id="trend"></div></article>
+      <article class="panel distribution-panel"><div class="panel-heading"><div><h2>Resultado de operaciones</h2><p>Distribución del periodo seleccionado</p></div></div><div id="distribution"></div></article></div>
+      <article class="panel recent"><div class="panel-heading"><div><h2>Últimas operaciones</h2><p>Una bitácora clara de cada resultado</p></div><button class="text-button" id="view-all">Ver actividad completa ↗</button></div><div id="recent-table" class="table-wrap"></div></article>
+      <div class="bottom-note"><span>✦ Acciones verificables, resultados visibles.</span><span>ESP-Claw → FastAPI → PostgreSQL / MinIO</span></div>
+    </section>
+    <section id="actividad" class="view" hidden><article class="panel"><div class="panel-heading"><div><h2>Bitácora de operaciones</h2><p>Consulta los datos de ejemplo del periodo seleccionado.</p></div></div><div class="filters"><label>Buscar operación <input id="search" type="search" placeholder="Acción o referencia…"></label><label>Resultado <select id="status"><option value="all">Todos</option><option value="ok">Completada</option><option value="error">Fallida</option></select></label></div><div id="activity-table" class="table-wrap"></div></article></section>
+    <section id="reportes" class="view" hidden><article class="panel report-panel"><span class="report-icon">▥</span><h2>Reporte de actividad</h2><p id="report-summary"></p><div class="report-details"><strong>Contenido del archivo</strong><p>Fecha, identificador, acción, referencia y resultado. La descarga respeta el periodo, la búsqueda y el resultado seleccionados en Actividad.</p></div><button class="button" id="report-export">Descargar reporte CSV ↓</button><small>Los reportes de este prototipo contienen exclusivamente datos simulados.</small></article></section>
+    <section id="configuracion" class="view" hidden><div class="config-grid"><article class="panel config-panel"><h2>Una interfaz, distintos proyectos.</h2><p>El mismo componente interpreta un objeto de configuración para cambiar identidad, indicadores, acciones y datos.</p><label>Proyecto de ejemplo<select id="project-select"><option value="dental">DentalRisk · Denti</option><option value="inventory">Inventario · Almacén</option></select></label><div class="report-details"><strong>Qué cambia</strong><p>Marca, color de acento, descripción, tarjetas, etiquetas y registros. La navegación y las gráficas se reutilizan.</p></div><button class="button" id="show-summary">Ver resumen actualizado ↗</button></article><article class="panel config-panel"><h2>Objeto de configuración activo</h2><pre id="config-preview"></pre></article></div></section>
+    <footer>Diseñado para comprender lo que hace el agente.<span>DentalRisk · Interfaz del agente · v01</span></footer>
+  </div>
+</main><div id="toast" role="status" aria-live="polite"></div>
+<script src="config.js"></script><script src="app.js"></script>
+</body></html>

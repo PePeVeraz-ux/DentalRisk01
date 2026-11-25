@@ -3,6 +3,11 @@ node_modules
 .env
 .env.*
 .local
+Agente IA
+AgenteIA.zip
+.tmp-*
+tmp
+output
 **/.next
 **/.next-ui
 **/.next-dev

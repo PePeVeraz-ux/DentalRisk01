@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "checks": [
+    "Indicadores de 7 días: 24 altas, 18 fotos, 51 operaciones, 96.1 % de éxito",
+    "Periodo de hoy: 8 operaciones, 100 % de éxito",
+    "Periodo de 3 días: 24 operaciones, 95.8 % de éxito",
+    "Filtro de fallidas: 2 registros",
+    "Búsqueda sin coincidencias: estado vacío",
+    "CSV filtrado: encabezado y 2 registros",
+    "Configuración de inventario cambia identidad y métricas",
+    "390 px sin desbordamiento de página en resumen y actividad",
+    "Sin errores JavaScript"
+  ],
+  "scope": "Prototipo local con datos simulados; sin conexión a API o ESP"
+}

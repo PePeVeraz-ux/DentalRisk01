@@ -1,7 +1,15 @@
 import { spawn } from 'node:child_process';
 const commands = [
   ['--import', 'tsx', 'apps/api/src/server.ts'],
-  ['node_modules/next/dist/bin/next', 'start', 'apps/web', '--hostname', '0.0.0.0'],
+  [
+    'node_modules/next/dist/bin/next',
+    'start',
+    'apps/web',
+    '--hostname',
+    '0.0.0.0',
+    '--port',
+    '3000',
+  ],
 ];
 const children = commands.map((args) =>
   spawn(process.execPath, args, { stdio: 'inherit', windowsHide: true }),

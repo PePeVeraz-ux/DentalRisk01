@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-27T06:45:46.843586+00:00",
+  "status": "passed",
+  "esp_hardware": true,
+  "esp_address": "http://192.168.100.13",
+  "session": "c200bdd2a264256553d4442258aa2b95",
+  "transport": "ESP WebIM natural-language requests + real http_request tools",
+  "synthetic_account_id": "20309eb3-5843-4992-aa11-191427f608ee",
+  "synthetic_email": "esp-proof-7c6afaf5@example.com",
+  "checks": [
+    "natural_language_user_creation",
+    "postgresql_agent_creation_record",
+    "real_esp_attachment",
+    "minio_jpeg_object",
+    "user_profile_schema_association"
+  ],
+  "profile_pic": {
+    "url": "/api/v1/users/20309eb3-5843-4992-aa11-191427f608ee/profile-pic",
+    "content_type": "image/jpeg",
+    "requires_auth": true
+  },
+  "test_image": "synthetic teal square, not a patient image",
+  "api_calls_created_by_this_script": false
+}

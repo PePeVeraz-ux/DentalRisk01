@@ -1,0 +1,7 @@
+{
+  "date": "2026-10-27T04:36:56.349329+00:00",
+  "tool": "pip-audit",
+  "audited_packages": 73,
+  "known_vulnerabilities": 0,
+  "scope": "Python environment only; container OS not audited"
+}

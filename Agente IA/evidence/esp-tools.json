@@ -1,0 +1,34 @@
+{
+  "source": "native ESP session tool log",
+  "http_calls": [
+    {
+      "tool": "http_request",
+      "method": "GET",
+      "url": "http://192.168.100.12:8000/api/v1/agent/connection",
+      "status": 200,
+      "tool_error": false
+    },
+    {
+      "tool": "http_request",
+      "method": "POST",
+      "url": "http://192.168.100.12:8000/api/v1/agent/users",
+      "status": 201,
+      "tool_error": false
+    },
+    {
+      "tool": "http_request",
+      "method": "POST",
+      "url": "http://192.168.100.12:8000/api/v1/agent/users/20309eb3-5843-4992-aa11-191427f608ee/profile-pic",
+      "status": 200,
+      "tool_error": false
+    },
+    {
+      "tool": "http_request",
+      "method": "GET",
+      "url": "http://192.168.100.12:8000/api/v1/agent/users/20309eb3-5843-4992-aa11-191427f608ee",
+      "status": 200,
+      "tool_error": false
+    }
+  ],
+  "secrets_excluded": true
+}

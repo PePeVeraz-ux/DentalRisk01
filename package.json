@@ -36,7 +36,10 @@
     "db:start": "tsx scripts/postgres-local.ts start",
     "db:stop": "tsx scripts/postgres-local.ts stop",
     "db:status": "tsx scripts/postgres-local.ts status",
-    "db:transfer": "tsx scripts/switch-postgres.ts"
+    "db:transfer": "tsx scripts/switch-postgres.ts",
+    "stack:start": "docker compose up --build -d",
+    "stack:stop": "docker compose down",
+    "stack:logs": "docker compose logs -f app agent-api"
   },
   "dependencies": {
     "@electric-sql/pglite": "0.5.10",

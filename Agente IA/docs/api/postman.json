@@ -1,0 +1,423 @@
+{
+  "info": {
+    "name": "DentalRisk Agente IA v01",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000"
+    },
+    {
+      "key": "email",
+      "value": ""
+    },
+    {
+      "key": "password",
+      "value": ""
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "agent_key",
+      "value": ""
+    },
+    {
+      "key": "user_id",
+      "value": ""
+    },
+    {
+      "key": "patient_id",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Estado",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/health/ready"
+      }
+    },
+    {
+      "name": "Iniciar sesión",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/api/v1/users/token",
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "username",
+              "value": "{{email}}"
+            },
+            {
+              "key": "password",
+              "value": "{{password}}"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 200) pm.collectionVariables.set(\"token\", pm.response.json().access_token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Mi perfil",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/api/v1/users/me",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Usuarios",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/api/v1/users",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Capacidades previstas",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/api/v1/agent/capabilities",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Resumen clínico autorizado",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/api/v1/clinical/summary",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Atenciones autorizadas",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/api/v1/clinical/records?kind=attentions&limit=50",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Citas autorizadas",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/api/v1/clinical/records?kind=appointments&limit=50",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Subir imagen propia",
+      "request": {
+        "method": "PUT",
+        "url": "{{base_url}}/api/v1/users/me/profile-pic",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Recuperar imagen propia",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/api/v1/users/me/profile-pic",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Cerrar sesión",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/api/v1/users/logout",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Conectar agente ESP",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/api/v1/agent/connection",
+        "header": [
+          {
+            "key": "X-Agent-Key",
+            "value": "{{agent_key}}"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Alta desde ESP",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/api/v1/agent/users",
+        "header": [
+          {
+            "key": "X-Agent-Key",
+            "value": "{{agent_key}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"request_id\": \"{{$guid}}\",\n  \"name\": \"Usuario de prueba\",\n  \"email\": \"esp-test@example.com\",\n  \"password\": \"{{password}}\",\n  \"role\": \"RECEPTION\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 201) pm.collectionVariables.set(\"user_id\", pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Registrar paciente desde ESP",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/api/v1/agent/patients",
+        "header": [
+          {
+            "key": "X-Agent-Key",
+            "value": "{{agent_key}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"request_id\": \"{{$guid}}\",\n  \"name\": \"Paciente de prueba\",\n  \"reference\": \"P-TEST-01\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 201) pm.collectionVariables.set(\"patient_id\", pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Consultar paciente creado por ESP",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/api/v1/agent/patients/{{patient_id}}",
+        "header": [
+          {
+            "key": "X-Agent-Key",
+            "value": "{{agent_key}}"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Foto de paciente recibida en ESP",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/api/v1/agent/patients/{{patient_id}}/profile-pic",
+        "header": [
+          {
+            "key": "X-Agent-Key",
+            "value": "{{agent_key}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"request_id\": \"{{$guid}}\",\n  \"image_path\": \"/fatfs/inbox/archivo_real.jpg\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Foto recibida en ESP",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/api/v1/agent/users/{{user_id}}/profile-pic",
+        "header": [
+          {
+            "key": "X-Agent-Key",
+            "value": "{{agent_key}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"request_id\": \"{{$guid}}\",\n  \"image_path\": \"/fatfs/inbox/archivo_real.jpg\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Consultar usuario del agente",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/api/v1/agent/users/{{user_id}}",
+        "header": [
+          {
+            "key": "X-Agent-Key",
+            "value": "{{agent_key}}"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Resumen clínico desde ESP",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/api/v1/agent/clinical/summary",
+        "header": [
+          {
+            "key": "X-Agent-Key",
+            "value": "{{agent_key}}"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Rendimiento por dentista desde ESP",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/api/v1/agent/clinical/performance?start_at=2026-11-01T00:00:00-07:00&end_at=2026-12-01T00:00:00-08:00",
+        "header": [
+          {
+            "key": "X-Agent-Key",
+            "value": "{{agent_key}}"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Atenciones desde ESP",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/api/v1/agent/clinical/records?kind=attentions&limit=50",
+        "header": [
+          {
+            "key": "X-Agent-Key",
+            "value": "{{agent_key}}"
+          }
+        ]
+      }
+    }
+  ]
+}

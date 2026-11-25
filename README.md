@@ -4,7 +4,27 @@ Versión 1.0.0. Aplicación para dirección, recepción, citas, control RFID de 
 
 ## Inicio local
 
-Requiere Node.js 24, npm y PostgreSQL. La API exige `DATABASE_URL`; PGlite queda para pruebas y transferencia explícita de datos antiguos.
+La forma recomendada requiere únicamente Docker Desktop y un archivo `.env`. DentalRisk, PostgreSQL, MinIO y el Agente IA forman un solo repositorio y comparten la misma base de datos.
+
+```powershell
+Copy-Item .env.example .env
+# Editar .env y reemplazar todos los valores CHANGE_ME
+docker compose up --build -d
+```
+
+Abrir **http://localhost:3000**. La API del agente queda disponible en **http://localhost:8000/docs**. El primer arranque aplica las migraciones, crea la cuenta indicada por `ADMIN_EMAIL` y `ADMIN_PASSWORD`, prepara el almacenamiento privado y levanta ambos servicios. Los arranques posteriores conservan cuentas, pacientes, registros y fotografías.
+
+Para consultar el estado o detener el sistema:
+
+```powershell
+docker compose ps
+docker compose logs -f app agent-api
+docker compose down
+```
+
+`docker compose down` conserva la información. No utilizar `docker compose down -v` salvo que se quiera borrar completamente la base y las fotografías. No se requiere ningún `.env` dentro de `Agente IA/`: todo se configura desde el archivo de la raíz.
+
+El desarrollo sin contenedores requiere Node.js 24, npm y PostgreSQL. La API exige `DATABASE_URL`; PGlite queda para pruebas y transferencia explícita de datos antiguos.
 
 En este equipo, PostgreSQL 17 está en `127.0.0.1:5432`. La aplicación y el Agente IA utilizan la misma base `dentalrisk`, con usuarios PostgreSQL distintos. La antigua base `dentalrisk_agent` se conserva como origen previo a la unión. Las conexiones están en el `.env` de cada proyecto. Desde esta carpeta, ejecutar `npm run db:start` después de reiniciar Windows y luego `npm run dev`. `npm run db:stop` detiene PostgreSQL conservando los datos en `.local/postgres`. No está registrado como servicio de Windows. No repetir `bootstrap` en esta instalación ya migrada.
 
@@ -70,6 +90,7 @@ La prueba de carga usa una base aislada, 10 sesiones, cuatro estaciones simulada
 
 - `apps/api/src/`: API, autenticación, dominio, reportes y trabajo semanal.
 - `apps/web/`: aplicación Next.js responsiva.
+- `Agente IA/`: API FastAPI para el ESP32-S3, fotografías privadas y operaciones delegadas.
 - `database/`: migraciones SQL.
 - `scripts/`: instalación, simulación de estación, pruebas, respaldo y recuperación.
 - `docs/modulos/`: documentación por módulo.
@@ -89,6 +110,6 @@ DentalRisk incluye el módulo Asistente Denti dentro del espacio ADMIN. La conve
 
 ## Servicio del agente
 
-La carpeta `Agente IA/` conserva las rutas protegidas que usa el ESP32-S3 para registrar pacientes y asociar fotos privadas en MinIO. El asistente web de DentalRisk está implementado en la API principal y usa herramientas propias para consultar rendimiento agregado y registrar pacientes con confirmación. El chat web aún requiere configurar el proveedor de IA; la carga de fotos desde el navegador no está habilitada. El rendimiento no expone identidades de pacientes, y el servidor no ejecuta SQL generado por el modelo.
+La carpeta `Agente IA/` forma parte de este mismo repositorio y conserva las rutas protegidas que usa el ESP32-S3 para registrar pacientes y asociar fotos privadas en MinIO. El asistente web de DentalRisk está implementado en la API principal y usa herramientas propias para consultar rendimiento agregado y registrar pacientes con confirmación. El chat web aún requiere configurar el proveedor de IA; la carga de fotos desde el navegador no está habilitada. El rendimiento no expone identidades de pacientes, y el servidor no ejecuta SQL generado por el modelo.
 
 La arquitectura y configuración están en [Asistente Denti dentro de DentalRisk](docs/arquitectura/004-asistente-denti-web.md).
