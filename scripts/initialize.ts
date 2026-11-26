@@ -8,6 +8,7 @@ const db = await database();
 
 try {
   await migrate(db);
+  await db.query('GRANT DELETE ON login_attempts, sessions TO dentalrisk_app');
   const existing = await db.query('SELECT id FROM users LIMIT 1');
   if (existing.rows.length) {
     console.log('Esquema clínico actualizado; la cuenta existente se conservó.');
