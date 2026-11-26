@@ -1,0 +1,18 @@
+services:
+  database: !reset null
+  clinic-init:
+    depends_on: !reset {}
+    environment:
+      DATABASE_URL: ${CLOUD_OWNER_DATABASE_URL:?Configura CLOUD_OWNER_DATABASE_URL en .env}
+  app:
+    environment:
+      DATABASE_URL: ${CLOUD_APP_DATABASE_URL:?Configura CLOUD_APP_DATABASE_URL en .env}
+  agent-migrate:
+    environment:
+      DATABASE_URL: ${CLOUD_AGENT_OWNER_DATABASE_URL:?Configura CLOUD_AGENT_OWNER_DATABASE_URL en .env}
+  agent-storage:
+    environment:
+      DATABASE_URL: ${CLOUD_AGENT_DATABASE_URL:?Configura CLOUD_AGENT_DATABASE_URL en .env}
+  agent-api:
+    environment:
+      DATABASE_URL: ${CLOUD_AGENT_DATABASE_URL:?Configura CLOUD_AGENT_DATABASE_URL en .env}

@@ -4,6 +4,46 @@ Versión 1.0.0. Aplicación para dirección, recepción, citas, control RFID de 
 
 ## Inicio local
 
+En Windows, con Docker Desktop abierto, ejecuta este comando desde la carpeta del repositorio recién clonado:
+
+```powershell
+.\iniciar.cmd
+```
+
+El comando elige puertos libres en el primer arranque, genera un `.env` con credenciales privadas y verifica que respondan DentalRisk y el servicio del agente. Consulta `ADMIN_EMAIL` y `ADMIN_PASSWORD` en ese archivo para iniciar sesión. Docker conserva la base y las fotos entre arranques.
+
+Una copia nueva usa su propia base PostgreSQL local. El mismo comando usa Neon si el `.env` contiene las conexiones de nube. El chat de IA requiere las variables `AGENT_CHAT_*` de un proveedor y el ESP32 requiere su vinculación.
+
+### PostgreSQL en la nube
+
+Usa una base PostgreSQL 17 administrada y una conexión directa con TLS validado (`sslmode=verify-full`). DentalRisk y el agente deben apuntar a la misma base, con roles separados.
+
+En la base de destino, usa un rol propietario con permiso para crear tablas y crear o administrar los roles `dentalrisk_app` y `dentalrisk_agent`. Antes del primer arranque, crea el rol `dentalrisk_app` con su contraseña y, conectado como propietario, concede estos permisos:
+
+```sql
+GRANT USAGE ON SCHEMA public TO dentalrisk_app;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public
+  GRANT SELECT, INSERT, UPDATE ON TABLES TO dentalrisk_app;
+```
+
+Agrega estas variables al `.env` de la raíz:
+
+- `CLOUD_OWNER_DATABASE_URL` y `CLOUD_AGENT_OWNER_DATABASE_URL` usan el mismo propietario. La primera empieza con `postgresql://` y la segunda con `postgresql+psycopg://`.
+- `CLOUD_APP_DATABASE_URL` usa `postgresql://` con el rol `dentalrisk_app`.
+- `CLOUD_AGENT_DATABASE_URL` usa `postgresql+psycopg://` con el rol `dentalrisk_agent`. Su contraseña debe coincidir con `AGENT_DB_PASSWORD`, que usa el inicializador para preparar ese rol.
+
+Conserva las variables del Compose base en `.env` porque Compose las interpola antes de aplicar la configuración de nube. Desde la raíz ejecuta:
+
+```powershell
+docker compose -f compose.yaml -f compose.cloud.yaml up --build -d
+```
+
+Este arranque prepara el esquema en el servidor remoto. Para conservar registros existentes, planifica su respaldo y restauración antes de iniciar contra el destino. MinIO sigue almacenando las fotos en su volumen local.
+
+Para el flujo automatizado con Neon, desde un equipo con Node, dependencias del repositorio y Neon CLI autenticado con el perfil `dentalrisk`, se puede ejecutar `node --env-file=.env --import tsx scripts/configure-neon.ts ID_DEL_PROYECTO`. Este comando prepara el rol de la aplicación y agrega las conexiones para la rama `production`. Úsalo una vez, con el rol `dentalrisk_app` aún sin crear y las variables `CLOUD_*` sin configurar.
+
+### PostgreSQL local
+
 La forma recomendada requiere únicamente Docker Desktop y un archivo `.env`. DentalRisk, PostgreSQL, MinIO y el Agente IA forman un solo repositorio y comparten la misma base de datos.
 
 ```powershell
