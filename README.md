@@ -12,6 +12,8 @@ Copy-Item .env.example .env
 docker compose up --build -d
 ```
 
+Si el `.env` proviene de una versión anterior, `npm run env:prepare` agrega las credenciales internas que falten sin reemplazar los valores existentes.
+
 Abrir **http://localhost:3000**. La API del agente queda disponible en **http://localhost:8000/docs**. El primer arranque aplica las migraciones, crea la cuenta indicada por `ADMIN_EMAIL` y `ADMIN_PASSWORD`, prepara el almacenamiento privado y levanta ambos servicios. Los arranques posteriores conservan cuentas, pacientes, registros y fotografías.
 
 Para consultar el estado o detener el sistema:

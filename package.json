@@ -39,7 +39,8 @@
     "db:transfer": "tsx scripts/switch-postgres.ts",
     "stack:start": "docker compose up --build -d",
     "stack:stop": "docker compose down",
-    "stack:logs": "docker compose logs -f app agent-api"
+    "stack:logs": "docker compose logs -f app agent-api",
+    "env:prepare": "node --import tsx scripts/prepare-env.ts"
   },
   "dependencies": {
     "@electric-sql/pglite": "0.5.10",
